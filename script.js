@@ -605,7 +605,7 @@ function initContactFx() {
 /* ════════════════════════════════════════════════
    LOCKSCREEN
 ════════════════════════════════════════════════ */
-const LS_CODE = '0608';
+const LS_CODE = '';
 const LS_URL  = 'https://the-aurora-forum-mun-demo.vercel.app/'; // placeholder — swap for real URL
 let lsInput   = '';
 let lsLocked  = false;
