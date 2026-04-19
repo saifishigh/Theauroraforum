@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="The Aurora Forum — A youth-led organisation forging leadership through connections.">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>The Aurora Forum</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IM+Fell+English:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div id="veil" aria-hidden="true"></div>
+<div class="logo-bg" aria-hidden="true"><img src="logo.png" alt="" draggable="false"></div>
+
+<!-- SIDEBAR (desktop) -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-inner">
+    <div class="sb-brand">
+      <div class="sb-star">✦</div>
+      <h1 class="sb-name">The Aurora<br>Forum</h1>
+      <p class="sb-est">Est. 2025</p>
+    </div>
+    <nav class="sb-nav" aria-label="Main Navigation">
+      <a href="#" class="sn active" data-page="front" onclick="navigate('front',this)"><span class="sn-i">I</span><span class="sn-t">Front Page</span></a>
+      <a href="#" class="sn" data-page="about" onclick="navigate('about',this)"><span class="sn-i">II</span><span class="sn-t">About</span></a>
+      <a href="#" class="sn" data-page="mun" onclick="navigate('mun',this)"><span class="sn-i">III</span><span class="sn-t">Aurora MUN</span></a>
+      <a href="#" class="sn" data-page="events" onclick="navigate('events',this)"><span class="sn-i">IV</span><span class="sn-t">Events</span></a>
+      <a href="#" class="sn" data-page="contact" onclick="navigate('contact',this)"><span class="sn-i">V</span><span class="sn-t">Contact</span></a>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-date" id="sidebar-date"></div>
+      <p class="sb-motto">"Forging leadership<br>through connections."</p>
+    </div>
+  </div>
+</aside>
+
+<!-- MOBILE TOP BAR -->
+<header class="topbar" id="topbar">
+  <div class="tb-left">
+    <img src="logo.png" alt="" class="tb-logo-img">
+    <span class="tb-name">The Aurora Forum</span>
+  </div>
+</header>
+
+<!-- iOS 26 SAFARI DOCK -->
+<nav class="dock" id="dock" aria-label="Page navigation">
+  <div class="dock-shell">
+    <button class="dock-btn active" data-page="front" onclick="navigate('front',this)" aria-label="Front Page">
+      <div class="dock-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <span class="dock-lbl">Home</span>
+      <span class="dock-pip" aria-hidden="true"></span>
+    </button>
+    <button class="dock-btn" data-page="about" onclick="navigate('about',this)" aria-label="About">
+      <div class="dock-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>
+      </div>
+      <span class="dock-lbl">About</span>
+      <span class="dock-pip" aria-hidden="true"></span>
+    </button>
+    <button class="dock-btn" data-page="mun" onclick="navigate('mun',this)" aria-label="Aurora MUN">
+      <div class="dock-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      </div>
+      <span class="dock-lbl">MUN</span>
+      <span class="dock-pip" aria-hidden="true"></span>
+    </button>
+    <button class="dock-btn" data-page="events" onclick="navigate('events',this)" aria-label="Events">
+      <div class="dock-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <span class="dock-lbl">Events</span>
+      <span class="dock-pip" aria-hidden="true"></span>
+    </button>
+    <button class="dock-btn" data-page="contact" onclick="navigate('contact',this)" aria-label="Contact">
+      <div class="dock-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </div>
+      <span class="dock-lbl">Contact</span>
+      <span class="dock-pip" aria-hidden="true"></span>
+    </button>
+  </div>
+</nav>
+
+<main class="main" id="main" aria-live="polite">
+
+  <!-- FRONT PAGE -->
+  <section class="page active" id="page-front" aria-label="Front Page">
+    <div class="hero">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-body">
+        <div class="hero-kicker">Leadership · Networking </div>
+        <h2 class="hero-hed">The Aurora Forum<br>Enters Its First Year<br>of Global Discourse</h2>
+        <p class="hero-dek">A generation prepares to make itself heard on the world stage</p>
+        <div class="hero-meta">
+          <span class="dateline">Gilgit, GB</span>
+          <span class="meta-sep">·</span>
+          <span id="hero-date"></span>
+        </div>
+      </div>
+      <div class="scroll-hint" aria-hidden="true"><span>scroll</span><div class="scroll-line"></div></div>
+    </div>
+
+    <div class="lead">
+      <div class="lead-main">
+        <div class="eyebrow">The Forum</div>
+        <p class="dropcap">The Aurora Forum exists to unite ambitious youth through a distinguished network that cultivates leadership, resilience, and vision. We believe that true influence is born not in isolation, but through purposeful connections that inspire growth and collaboration — hosting forums, camps, MUNs, and service initiatives where young individuals refine communication, forge alliances, and rise as leaders of integrity.</p>
+      </div>
+      <div class="lead-aside">
+        <div class="lq-bar"></div>
+        <blockquote>
+          <p>"guided by the twin pillars of networking and leadership, we pledge to create a community where young minds may converge, connect, cultivate the skills that define tommorows leaders."</p>
+          <cite>— Aurora Forum Charter, Preamble</cite>
+        </blockquote>
+      </div> 
+    </div>
+
+    <div class="card-pair">
+      <article class="cp-card">
+        <div class="eyebrow">Membership</div>
+        <h3>A Forum for All Minds</h3>
+        <p>Open to all students between the ages of fourteen and twenty-two. No prior experience in debate, journalism, or diplomacy is required — only a willingness to engage earnestly with the world's great questions.</p>
+        <p>Weekly workshops cover public speaking, research methodology, and parliamentary procedure, ensuring that every member arrives at the table prepared.</p>
+      </article>
+      <article class="cp-card">
+        <div class="eyebrow">Looking Ahead</div>
+        <h3>What Lies Ahead</h3>
+        <p>Plans are underway for an expansion of the forum's publication wing, with a quarterly print edition of this very journal to be circulated among partner schools.</p>
+        <p>Collaborations with international youth organisations are in negotiation, and the forum's first fully-fledged Model United Nations conference is set to be announced — <em>should one be cleared to read it.</em></p>
+      </article>
+    </div>
+
+    <div class="classified">
+      <div class="cl-body">
+        <div class="eyebrow">Special Report</div>
+        <h3 class="cl-title">Aurora MUN — First Edition</h3>
+        <p class="cl-tag">A conference of ambition, resolution &amp; purpose</p>
+        <div class="cl-cols">
+          <p>The inaugural Aurora Model United Nations conference promises to bring together delegates from across the region for three days of intensive committee sessions. Committees will cover the Security Council, UNHCR, and a special crisis committee.</p>
+          <p>Registration details, committee topics, background guides, and delegate pricing will be released through official channels. A secretariat of twelve has been appointed, working in strict confidentiality until the formal launch date arrives.</p>
+        </div>
+      </div>
+      <div class="cl-veil" aria-hidden="true">
+        <div class="clv-bar">⬛ &nbsp;C L A S S I F I E D — N O T &nbsp;F O R &nbsp;P U B L I C &nbsp;R E L E A S E &nbsp;⬛</div>
+        <div class="clv-bar clv-2">Aurora MUN · Confidential · Pending Announcement</div>
+        <div class="clv-stamp">ACCESS DENIED</div>
+      </div>
+    </div>
+
+    <div class="teasers">
+      <button class="teaser-btn" onclick="navigate('about',document.querySelector('[data-page=about]'))"><div class="tb-sec">Section II</div><div class="tb-hed">Who We Are &amp; What We Stand For</div><span class="tb-arr">→</span></button>
+      <button class="teaser-btn" onclick="navigate('events',document.querySelector('[data-page=events]'))"><div class="tb-sec">Section IV</div><div class="tb-hed">Forthcoming Events · March · April · Beyond</div><span class="tb-arr">→</span></button>
+      <button class="teaser-btn" onclick="navigate('contact',document.querySelector('[data-page=contact]'))"><div class="tb-sec">Section V</div><div class="tb-hed">Write to Us · Join the Forum</div><span class="tb-arr">→</span></button>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="page" id="page-about" aria-label="About the Forum">
+
+    <!-- Page header — same pattern as other inner pages -->
+    <div class="pg-head">
+      <div class="pg-label">Section II</div>
+      <h2 class="pg-title">About the Forum</h2>
+      <p class="pg-sub">Who we are · What we stand for · Where we go</p>
+    </div>
+
+    <!-- Intro prose — same width/padding as other pages -->
+    <div class="ab-intro">
+      <p class="ab-intro-lead">The Aurora Forum is a youth-led organisation dedicated to the belief that thoughtful debate, rigorous research, and compassionate dialogue are the foundations of a better world. We were established in 2025 by a small group of students who found no existing space that matched their ambition — and so they made one.</p>
+      <p>Our name was chosen with care. The aurora — that breathtaking phenomenon of light at the edges of the world — speaks to what we aspire to be: a brilliant, fleeting illumination at the horizon of possibility. We are young, and we are reaching.</p>
+    </div>
+
+    <!-- Stats row — 3 equal columns, collapses to row on mobile -->
+    <div class="ab-stats">
+      <div class="ab-stat-box reveal">
+        <div class="ab-stat-n" data-count="8">8</div>
+        <div class="ab-stat-l">Secretariat Members</div>
+      </div>
+      <div class="ab-stat-box reveal">
+        <div class="ab-stat-n">2025</div>
+        <div class="ab-stat-l">Year Founded</div>
+      </div>
+      <div class="ab-stat-box reveal">
+        <div class="ab-stat-n" data-count="5">5</div>
+        <div class="ab-stat-l">MUN Committees</div>
+      </div>
+    </div>
+
+    <!-- Pillars — 3-col on desktop, single col stacked on mobile -->
+    <div class="ab-pillars">
+      <div class="ab-pillar reveal">
+        <div class="ab-pillar-top">
+          <span class="ab-pillar-num">01</span>
+          <span class="ab-pillar-icon">✒</span>
+        </div>
+        <h3 class="ab-pillar-title">Discourse</h3>
+        <p class="ab-pillar-body">Fortnightly debates, symposia, and structured deliberation on global affairs. Every voice sharpened in argument becomes an instrument of change.</p>
+      </div>
+      <div class="ab-pillar reveal">
+        <div class="ab-pillar-top">
+          <span class="ab-pillar-num">02</span>
+          <span class="ab-pillar-icon">📰</span>
+        </div>
+        <h3 class="ab-pillar-title">Publication</h3>
+        <p class="ab-pillar-body">This journal and our forthcoming quarterly print edition, distributed to partner schools across the region. Writing as a form of diplomacy.</p>
+      </div>
+      <div class="ab-pillar reveal">
+        <div class="ab-pillar-top">
+          <span class="ab-pillar-num">03</span>
+          <span class="ab-pillar-icon">🌐</span>
+        </div>
+        <h3 class="ab-pillar-title">Diplomacy</h3>
+        <p class="ab-pillar-body">Model UN, inter-school collaboration, and international youth outreach. The practice of listening before speaking — and speaking with intention.</p>
+      </div>
+    </div>
+
+    <!-- Pull quote — centred, same padding system as site -->
+    <div class="ab-quote">
+      <div class="ab-quote-inner">
+        <div class="ab-quote-ornament">✦</div>
+        <blockquote>
+          <p>"To speak is to dare. The Aurora Forum is a place where daring is rewarded with understanding."</p>
+          <cite>— Founding Statement, 2025</cite>
+        </blockquote>
+      </div>
+    </div>
+
+    <!-- Charter block -->
+    <div class="ab-charter">
+      <div class="ab-charter-bar"></div>
+      <p>"guided by the twin pillars of networking and leadership, we pledge to create a community where young minds may converge, connect, and cultivate the skills that define tomorrow's leaders."</p>
+      <cite>— Aurora Forum Charter, Preamble</cite>
+    </div>
+
+    <!-- Team -->
+    <div class="ab-team">
+      <div class="ab-team-hd">
+        <div class="eyebrow">The Secretariat</div>
+        <h3 class="ab-team-title">Leadership</h3>
+        <p class="ab-team-sub">Tap any card to learn more</p>
+      </div>
+      <div class="sec-grid">
+        <div class="sec-card reveal">
+          <div class="sec-card-inner">
+            <div class="sec-card-front"><div class="av">M</div><div class="av-role">President · Founder</div><div class="av-name">Muslim Naqvi</div></div>
+            <div class="sec-card-back"><div class="av av-back">M</div><p class="av-bio">Visionary founder who established the Aurora Forum in 2025 with a mission to unite ambitious youth across Gilgit Baltistan and beyond.</p></div>
+          </div>
+        </div>
+        <div class="sec-card reveal">
+          <div class="sec-card-inner">
+            <div class="sec-card-front"><div class="av">S</div><div class="av-role">External Vice President</div><div class="av-name">Muhammad Iqtida</div></div>
+            <div class="sec-card-back"><div class="av av-back">S</div><p class="av-bio">Leads outreach, partnerships and external relations with schools, organisations and international youth networks.</p></div>
+          </div>
+        </div>
+        <div class="sec-card reveal">
+          <div class="sec-card-inner">
+            <div class="sec-card-front"><div class="av">W</div><div class="av-role">Internal Vice President</div><div class="av-name">Mishal Amin</div></div>
+            <div class="sec-card-back"><div class="av av-back">W</div><p class="av-bio">Oversees internal operations, member welfare, and the day-to-day running of forum activities and committees.</p></div>
+          </div>
+        </div>
+        <div class="sec-card reveal">
+          <div class="sec-card-inner">
+            <div class="sec-card-front"><div class="av">R</div><div class="av-role">General Secretary</div><div class="av-name">Ali Souleh</div></div>
+            <div class="sec-card-back"><div class="av av-back">R</div><p class="av-bio">Manages official correspondence, maintains records, and coordinates between all branches of the secretariat.</p></div>
+          </div>
+        </div>
+        <div class="sec-card reveal">
+          <div class="sec-card-inner">
+            <div class="sec-card-front"><div class="av">C</div><div class="av-role">Chancellor</div><div class="av-name">Waseay Zamir</div></div>
+            <div class="sec-card-back"><div class="av av-back">C</div><p class="av-bio">The Chancellor position is currently open. This role will oversee academic programmes and forum governance.</p></div>
+          </div>
+        </div>
+        <div class="sec-card reveal">
+          <div class="sec-card-inner">
+            <div class="sec-card-front"><div class="av">U</div><div class="av-role">Vice Chancellor</div><div class="av-name">Aleena Abuzar </div></div>
+            <div class="sec-card-back"><div class="av av-back">U</div><p class="av-bio">Our beloved chancellors assistant :p</p></div>
+          </div>
+        </div>
+        <div class="sec-card reveal">
+          <div class="sec-card-inner">
+            <div class="sec-card-front"><div class="av">H</div><div class="av-role">Ambassador General</div><div class="av-name">Sabit Ali Rahim</div></div>
+            <div class="sec-card-back"><div class="av av-back">H</div><p class="av-bio">Represents the forum to partner institutions and leads the forum's ambassadorial outreach programme.</p></div>
+          </div>
+        </div>
+        <div class="sec-card reveal">
+          <div class="sec-card-inner">
+            <div class="sec-card-front"><div class="av">D</div><div class="av-role">Ambassador General</div><div class="av-name">Awrish Shah</div></div>
+            <div class="sec-card-back"><div class="av av-back">D</div><p class="av-bio">Co-leads the ambassador programme, forging connections with student bodies and youth organisations regionally.</p></div>
+          </div>
+        </div>
+        <div class="sec-card reveal">
+          <div class="sec-card-inner">
+            <div class="sec-card-front"><div class="av">U</div><div class="av-role">Treasurer</div><div class="av-name">Ubaid Ali</div></div>
+            <div class="sec-card-back"><div class="av av-back">U</div><p class="av-bio">Manages the forum's finances, budgeting for events, publications and all programme expenditures.</p></div>
+          </div>
+        </div>
+        <div class="sec-card reveal">
+          <div class="sec-card-inner">
+            <div class="sec-card-front"><div class="av">S</div><div class="av-role">Head IT &amp; Design</div><div class="av-name">Saif Alam</div></div>
+            <div class="sec-card-back"><div class="av av-back">S</div><p class="av-bio">The handsome, nonchalant, sigma goat who handles all tech stuff including the website type shi.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- MUN -->
+  <section class="page" id="page-mun" aria-label="Aurora MUN">
+    <div class="pg-head"><div class="pg-label">Special Report</div><h2 class="pg-title">Aurora MUN</h2><p class="pg-sub">Model United Nations · Inaugural Edition</p></div>
+    <div class="mun-blk">
+      <div class="mun-body">
+        <div class="eyebrow">Aurora Model United Nations</div>
+        <h3 class="mun-hed">First Session — Forthcoming 2025</h3>
+        <div class="mun-stats">
+          <div class="ms"><div class="ms-l">Location</div><div class="ms-v">[Classified]</div></div>
+          <div class="ms"><div class="ms-l">Duration</div><div class="ms-v"><span data-count="3">3</span> Days</div></div>
+          <div class="ms"><div class="ms-l">Committees</div><div class="ms-v"><span data-count="5">5</span> Confirmed</div></div>
+        </div>
+        <p>The inaugural session of Aurora MUN is designed to bring together the region's sharpest young minds for an immersive exercise in multilateral diplomacy. Delegates will assume the roles of national representatives, debating resolutions across committees that mirror the true architecture of the United Nations system.</p>
+        <p>Committee topics, background guides, delegate allocations, and full logistics will be released through official channels at the time of formal announcement. The secretariat is currently in the final stages of preparation. All information at this stage remains strictly embargoed.</p>
+      </div>
+      <div class="mun-veil" aria-hidden="true">
+        <div class="mv-bar">⬛ &nbsp;C L A S S I F I E D &nbsp;⬛</div>
+        <div class="mv-bar">Aurora MUN · Information Embargoed · Pending Announcement</div>
+        <div class="mv-bar">⬛ ACCESS DENIED ⬛</div>
+        <div class="mv-stamp" id="mv-stamp-btn" onclick="openLockscreen()" style="pointer-events:all;cursor:pointer;" title="Authorised personnel only">ACCESS DENIED</div>
+      </div>
+    </div>
+    <p class="pg-note">Full details will be made available upon the official launch. Follow official channels for the announcement.</p>
+  </section>
+
+  <!-- LOCKSCREEN OVERLAY -->
+  <div id="lockscreen" class="ls-overlay" aria-modal="true" role="dialog" aria-label="Security Clearance">
+    <div class="ls-backdrop" onclick="closeLockscreen()"></div>
+    <div class="ls-phone">
+      <div class="ls-statusbar">
+        <span class="ls-time" id="ls-time">00:00</span>
+        <div class="ls-icons">
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor"><rect x="0" y="3" width="2" height="7" rx="0.5"/><rect x="3" y="2" width="2" height="8" rx="0.5"/><rect x="6" y="1" width="2" height="9" rx="0.5"/><rect x="9" y="0" width="2" height="10" rx="0.5"/></svg>
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor"><path d="M7 2C4.5 2 2.3 3.1 0.8 4.8L2.2 6.2C3.4 4.8 5.1 4 7 4s3.6.8 4.8 2.2l1.4-1.4C11.7 3.1 9.5 2 7 2zm0 3c-1.4 0-2.6.6-3.5 1.5L4.9 7.9C5.4 7.3 6.2 7 7 7s1.6.3 2.1.9l1.4-1.4C9.6 5.6 8.4 5 7 5zm0 3a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/></svg>
+          <svg width="22" height="10" viewBox="0 0 22 10" fill="currentColor"><rect x="0" y="1" width="18" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1"/><rect x="1.5" y="2.5" width="12" height="5" rx="1"/><rect x="19" y="3.5" width="2.5" height="3" rx="1"/></svg>
+        </div>
+      </div>
+      <div class="ls-header">
+        <div class="ls-logo-wrap"><img src="logo.png" alt="" class="ls-logo"></div>
+        <p class="ls-title">Aurora Forum</p>
+        <p class="ls-subtitle">Security Clearance Required</p>
+      </div>
+      <div class="ls-dots" id="ls-dots">
+        <div class="ls-dot" id="ls-d0"></div>
+        <div class="ls-dot" id="ls-d1"></div>
+        <div class="ls-dot" id="ls-d2"></div>
+        <div class="ls-dot" id="ls-d3"></div>
+      </div>
+      <p class="ls-hint" id="ls-hint">Enter clearance code</p>
+      <div class="ls-pad">
+        <button class="ls-key" onclick="lsKey('1')"><span class="ls-kn">1</span></button>
+        <button class="ls-key" onclick="lsKey('2')"><span class="ls-kn">2</span><span class="ls-ks">ABC</span></button>
+        <button class="ls-key" onclick="lsKey('3')"><span class="ls-kn">3</span><span class="ls-ks">DEF</span></button>
+        <button class="ls-key" onclick="lsKey('4')"><span class="ls-kn">4</span><span class="ls-ks">GHI</span></button>
+        <button class="ls-key" onclick="lsKey('5')"><span class="ls-kn">5</span><span class="ls-ks">JKL</span></button>
+        <button class="ls-key" onclick="lsKey('6')"><span class="ls-kn">6</span><span class="ls-ks">MNO</span></button>
+        <button class="ls-key" onclick="lsKey('7')"><span class="ls-kn">7</span><span class="ls-ks">PQRS</span></button>
+        <button class="ls-key" onclick="lsKey('8')"><span class="ls-kn">8</span><span class="ls-ks">TUV</span></button>
+        <button class="ls-key" onclick="lsKey('9')"><span class="ls-kn">9</span><span class="ls-ks">WXYZ</span></button>
+        <div class="ls-key ls-key-empty"></div>
+        <button class="ls-key" onclick="lsKey('0')"><span class="ls-kn">0</span></button>
+        <button class="ls-key ls-key-del" onclick="lsDel()">
+          <svg width="20" height="14" viewBox="0 0 20 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1H18a1 1 0 011 1v10a1 1 0 01-1 1H7L1 7z"/><line x1="11" y1="5" x2="16" y2="9"/><line x1="16" y1="5" x2="11" y2="9"/></svg>
+        </button>
+      </div>
+      <button class="ls-cancel" onclick="closeLockscreen()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- EVENTS -->
+  <section class="page" id="page-events" aria-label="Forthcoming Events">
+    <div class="pg-head"><div class="pg-label">Section IV</div><h2 class="pg-title">Forthcoming Events</h2><p class="pg-sub">Sessions, symposia &amp; gatherings of note</p></div>
+    <p class="pg-intro">The Aurora Forum maintains a rolling calendar of events open to members and, where indicated, to the general public. All sessions are held in the spirit of open inquiry — curiosity is the only admission fee.</p>
+    <div class="ev-list">
+      <div class="ev reveal"><div class="ev-dt"><span class="ev-mo"> - </span><span class="ev-dy"> - </span></div><div class="ev-sep" aria-hidden="true"></div><div class="ev-bd"><div class="ev-ti">TO BE ANNOUNCED </div><div class="ev-de">- - -</div></div></div>
+      <div class="ev reveal"><div class="ev-dt"><span class="ev-mo"> - </span><span class="ev-dy"> - </span></div><div class="ev-sep" aria-hidden="true"></div><div class="ev-bd"><div class="ev-ti">TO BE ANNOUNCED</div><div class="ev-de">- - -</div></div></div>
+      <div class="ev reveal"><div class="ev-dt"><span class="ev-mo"> - </span><span class="ev-dy"> - </span></div><div class="ev-sep" aria-hidden="true"></div><div class="ev-bd"><div class="ev-ti">TO BE ANNOUNCED</div><div class="ev-de">- - -</div></div></div>
+      <div class="ev reveal"><div class="ev-dt"><span class="ev-mo"> - </span><span class="ev-dy"> - </span></div><div class="ev-sep" aria-hidden="true"></div><div class="ev-bd"><div class="ev-ti">TO BE ANNOUNCED</div><div class="ev-de">- - -</div></div></div>
+      <div class="ev ev-red reveal"><div class="ev-dt ev-dt-red"><span class="ev-mo">TBA</span><span class="ev-dy">2025</span></div><div class="ev-sep ev-sep-red" aria-hidden="true"></div><div class="ev-bd"><div class="ev-ti ev-ti-red">⬛ Aurora MUN — Official Announcement [Embargoed]</div><div class="ev-de">Date, location and full programme to be announced. Details remain confidential until formal release.</div></div></div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="page" id="page-contact" aria-label="Contact">
+
+    <!-- Animated header -->
+    <div class="ct-hero">
+      <div class="ct-hero-bg" aria-hidden="true">
+        <div class="ct-orb ct-orb-1"></div>
+        <div class="ct-orb ct-orb-2"></div>
+        <div class="ct-grid-lines" aria-hidden="true"></div>
+      </div>
+      <div class="ct-hero-body">
+        <div class="ct-label">Section V</div>
+        <h2 class="ct-title">Get In Touch</h2>
+        <p class="ct-sub">Write to us · Join us · Find us</p>
+        <p class="ct-desc">The Aurora Forum welcomes letters of inquiry, membership applications, partnership proposals, and general correspondence. We endeavour to reply within seven working days.</p>
+        <div class="ct-stats">
+          <div class="ct-stat"><span class="ct-stat-v">7</span><span class="ct-stat-l">Days Response</span></div>
+          <div class="ct-stat-div"></div>
+          <div class="ct-stat"><span class="ct-stat-v">Open</span><span class="ct-stat-l">Membership</span></div>
+          <div class="ct-stat-div"></div>
+          <div class="ct-stat"><span class="ct-stat-v">GB</span><span class="ct-stat-l">Gilgit Baltistan</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main contact layout -->
+    <div class="contact-lay">
+
+      <!-- Form side -->
+      <div class="cf-side">
+        <div class="cf-side-hd">
+          <div class="eyebrow">Send a Dispatch</div>
+          <div class="cf-hd-line"></div>
+        </div>
+        <div class="cform">
+          <div class="cf-r cf-r-half">
+            <div class="cf-field">
+              <label for="cf-name">Your Name</label>
+              <input id="cf-name" type="text" placeholder="Full name" autocomplete="name">
+              <div class="cf-field-bar"></div>
+            </div>
+            <div class="cf-field">
+              <label for="cf-inst">Institution</label>
+              <input id="cf-inst" type="text" placeholder="School or organisation" autocomplete="organization">
+              <div class="cf-field-bar"></div>
+            </div>
+          </div>
+          <div class="cf-field">
+            <label for="cf-subj">Subject</label>
+            <input id="cf-subj" type="text" placeholder="Nature of enquiry">
+            <div class="cf-field-bar"></div>
+          </div>
+          <div class="cf-field">
+            <label for="cf-msg">Message</label>
+            <textarea id="cf-msg" placeholder="Write your message here..." rows="6"></textarea>
+            <div class="cf-field-bar"></div>
+          </div>
+          <button class="btn-send" onclick="submitForm(this)">
+            <span class="btn-send-txt">Dispatch Message</span>
+            <span class="btn-send-icon" aria-hidden="true">✦</span>
+            <div class="btn-send-glow"></div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Info side -->
+      <div class="ci-side">
+        <div class="eyebrow">Direct Lines</div>
+
+        <div class="ci-list">
+          <a class="ci ci-link" href="mailto:theauroraforum.pk@gmail.com">
+            <div class="ci-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </div>
+            <div class="ci-text">
+              <div class="ci-l">Gmail</div>
+              <div class="ci-v">theauroraforum.pk@gmail.com</div>
+            </div>
+            <span class="ci-arr">→</span>
+          </a>
+
+          <a class="ci ci-link" href="https://instagram.com/theauroraforum" target="_blank" rel="noopener">
+            <div class="ci-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            </div>
+            <div class="ci-text">
+              <div class="ci-l">Instagram</div>
+              <div class="ci-v">@theauroraforum</div>
+            </div>
+            <span class="ci-arr">→</span>
+          </a>
+
+          <a class="ci ci-link" href="https://wa.me/923405962008" target="_blank" rel="noopener">
+            <div class="ci-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.14 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.05 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 17z"/></svg>
+            </div>
+            <div class="ci-text">
+              <div class="ci-l">WhatsApp</div>
+              <div class="ci-v">+92 340 5962008</div>
+            </div>
+            <span class="ci-arr">→</span>
+          </a>
+
+          <div class="ci ci-static">
+            <div class="ci-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div class="ci-text">
+              <div class="ci-l">Location</div>
+              <div class="ci-v">Jutial, Gilgit Baltistan, PK</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Membership card -->
+        <div class="ci-member-card">
+          <div class="ci-mc-bg" aria-hidden="true"></div>
+          <div class="ci-mc-content">
+            <div class="ci-mc-star">✦</div>
+            <h4>Join the Forum</h4>
+            <p>Membership applications are reviewed on a rolling basis. No prior experience required — only curiosity and the will to engage.</p>
+            <div class="ci-mc-tag">Ages 14 – 22 · Open Enrollment</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <span>© <span id="footer-year"></span> The Aurora Forum</span>
+  <span class="foot-c" id="footer-date"></span>
+  <span>Est. 2026 · Gilgit Baltistan , PK</span>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+/* ================================================================
+   AURORA FORUM — PATCH NOTES
+   Paste these blocks into your existing style.css and script.js
+   Three changes:
+     1. MUN section — blur + modern classified tape
+     2. Classified block on front page — same treatment
+     3. Mobile/tablet hero gap fix
+   ================================================================ */
+
+
+/* ================================================================
+   ① FIND AND REPLACE the entire .mun-blk … .pg-note block
+      in style.css (lines ~580–600) with this:
+   ================================================================ */
+
+.mun-blk {
+  position: relative;
+  border-bottom: 1px solid var(--bdr);
+  overflow: hidden;
+}
+
+/* Blurred content layer */
+.mun-body {
+  padding: 52px clamp(32px,6vw,72px);
+  filter: blur(5px) brightness(0.6);
+  user-select: none;
+  pointer-events: none;
+  transition: filter 0.4s ease;
+}
+
+.mun-hed {
+  font-family: var(--fp);
+  font-size: clamp(1.5rem,4vw,2.7rem);
+  font-weight: 900;
+  color: var(--cream);
+  margin-bottom: 28px;
+  line-height: 1.15;
+}
+
+.mun-stats {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1px;
+  background: var(--bdr);
+  border: 1px solid var(--bdr);
+  max-width: 480px;
+  margin-bottom: 36px;
+}
+
+.ms { background: var(--bg); padding: 18px 20px; text-align: center; }
+.ms-l { font-family: var(--fb); font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold2); margin-bottom: 6px; }
+.ms-v { font-family: var(--fp); font-size: 1.1rem; font-weight: 700; color: var(--cream); }
+
+.mun-body p {
+  font-family: var(--fb);
+  font-size: 0.9rem;
+  line-height: 1.78;
+  color: var(--txt2);
+  text-align: justify;
+  hyphens: auto;
+  max-width: 660px;
+  margin-bottom: 14px;
+}
+
+/* Modern classified overlay */
+.mun-veil {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  pointer-events: none;
+  z-index: 10;
+  /* frosted glass tint matching the site's dark palette */
+  background: rgba(12, 10, 6, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* Glowing scanline sweep across the veil */
+.mun-veil::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(200, 168, 75, 0.018) 3px,
+    rgba(200, 168, 75, 0.018) 4px
+  );
+  pointer-events: none;
+  animation: scanlines 8s linear infinite;
+}
+
+@keyframes scanlines {
+  from { background-position: 0 0; }
+  to   { background-position: 0 100px; }
+}
+
+/* The tape strips — modern frosted glass style */
+.mv-bar {
+  width: min(520px, 88%);
+  padding: 13px 28px;
+  text-align: center;
+  font-family: var(--fs);
+  font-weight: 700;
+  font-size: clamp(0.58rem, 1.4vw, 0.8rem);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  /* frosted glass using site's palette */
+  background: rgba(16, 13, 8, 0.82);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  border: 1px solid rgba(200, 168, 75, 0.2);
+  border-radius: 4px;
+  color: rgba(200, 168, 75, 0.85);
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(200, 168, 75, 0.1),
+    0 0 40px rgba(200, 168, 75, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shimmer sweep on each bar */
+.mv-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; bottom: 0;
+  width: 60%;
+  background: linear-gradient(90deg, transparent, rgba(200,168,75,0.06), transparent);
+  animation: barShimmer 4s ease-in-out infinite;
+}
+
+.mv-bar:nth-child(2)::after { animation-delay: 1.3s; }
+.mv-bar:nth-child(3)::after { animation-delay: 2.6s; }
+
+@keyframes barShimmer {
+  0%   { left: -100%; }
+  60%  { left: 150%; }
+  100% { left: 150%; }
+}
+
+/* Pulsing ACCESS DENIED badge — replaces the old stamp */
+.mv-stamp {
+  margin-top: 4px;
+  padding: 8px 22px;
+  border: 1px solid rgba(139, 26, 26, 0.5);
+  border-radius: 3px;
+  background: rgba(139, 26, 26, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: var(--fs);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(220, 80, 80, 0.8);
+  box-shadow: 0 0 18px rgba(139,26,26,0.2), inset 0 0 12px rgba(139,26,26,0.08);
+  animation: redPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes redPulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(139,26,26,0.2), inset 0 0 12px rgba(139,26,26,0.08); opacity: 0.9; }
+  50%       { box-shadow: 0 0 32px rgba(139,26,26,0.45), inset 0 0 20px rgba(139,26,26,0.18); opacity: 1; }
+}
+
+.pg-note {
+  font-family: var(--fb);
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--txt3);
+  text-align: center;
+  padding: 24px;
+}
+
+
+/* ================================================================
+   ② ALSO UPDATE the front-page .classified block to match.
+      FIND .cl-veil … .clv-stamp in style.css and REPLACE with:
+   ================================================================ */
+
+.cl-veil {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  pointer-events: none;
+  overflow: hidden;
+  background: rgba(12, 10, 6, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.cl-veil::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(200, 168, 75, 0.018) 3px,
+    rgba(200, 168, 75, 0.018) 4px
+  );
+  pointer-events: none;
+  animation: scanlines 8s linear infinite;
+}
+
+.clv-bar {
+  width: min(520px, 88%);
+  padding: 13px 28px;
+  text-align: center;
+  font-family: var(--fs);
+  font-weight: 700;
+  font-size: clamp(0.58rem, 1.4vw, 0.8rem);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  background: rgba(16, 13, 8, 0.82);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  border: 1px solid rgba(200, 168, 75, 0.2);
+  border-radius: 4px;
+  color: rgba(200, 168, 75, 0.85);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6), inset 0 1px 0 rgba(200, 168, 75, 0.1);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.clv-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; bottom: 0;
+  width: 60%;
+  background: linear-gradient(90deg, transparent, rgba(200,168,75,0.06), transparent);
+  animation: barShimmer 4s ease-in-out infinite;
+}
+
+.clv-2::after { animation-delay: 1.3s; }
+
+.clv-stamp {
+  padding: 8px 22px;
+  border: 1px solid rgba(139, 26, 26, 0.5);
+  border-radius: 3px;
+  background: rgba(139, 26, 26, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: var(--fs);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(220, 80, 80, 0.8);
+  animation: redPulse 2.5s ease-in-out infinite;
+  /* Remove old positioning — it's now in-flow */
+  position: static;
+  transform: none;
+  top: auto;
+  right: auto;
+}
+
+/* Also blur the classified content on front page */
+.cl-body {
+  padding: 48px clamp(28px,4vw,64px);
+  filter: blur(5px) brightness(0.6);
+  user-select: none;
+  pointer-events: none;
+}
+
+
+/* ================================================================
+   ③ MOBILE/TABLET GAP FIX — hero takes too much height on mobile.
+      ADD this inside your existing @media (max-width: 900px) block,
+      or paste it anywhere in style.css:
+   ================================================================ */
+
+@media (max-width: 900px) {
+  /* Hero was 90vh — way too tall on phones, leaves dead space */
+  .hero {
+    min-height: 60vh;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero {
+    min-height: 55vh;
+  }
+
+  /* Tighten hero body padding on small screens */
+  .hero-body {
+    padding: 28px 22px 36px;
+  }
+
+  /* Reduce lead section padding */
+  .lead-main {
+    padding: 28px 22px;
+  }
+
+  .lead-aside {
+    padding: 24px 22px;
+  }
+
+  /* Cards tighter on phone */
+  .cp-card {
+    padding: 28px 22px;
+  }
+
+  /* Classified tighter */
+  .cl-body {
+    padding: 32px 22px;
+  }
+
+  /* Teasers tighter */
+  .teaser-btn {
+    padding: 18px 22px;
+  }
+}
+
+
+/* ================================================================
+   ④ HTML — UPDATE the MUN veil markup in index.html.
+      Find the <div class="mun-veil"> block and replace it with:
+   ================================================================
+
+<div class="mun-veil" aria-hidden="true">
+  <div class="mv-bar">⬛ &nbsp;C L A S S I F I E D &nbsp;⬛</div>
+  <div class="mv-bar">Aurora MUN · Information Embargoed · Pending Formal Announcement</div>
+  <div class="mv-bar">⬛ &nbsp;D O &nbsp;N O T &nbsp;D I S T R I B U T E &nbsp;⬛</div>
+  <div class="mv-stamp">ACCESS DENIED</div>
+</div>
+
+   ================================================================
+   And update the .cl-veil block on the front page too.
+   Find <div class="cl-veil"> and replace with:
+   ================================================================
+
+<div class="cl-veil" aria-hidden="true">
+  <div class="clv-bar">⬛ &nbsp;C L A S S I F I E D — N O T &nbsp;F O R &nbsp;P U B L I C &nbsp;R E L E A S E &nbsp;⬛</div>
+  <div class="clv-bar clv-2">Aurora MUN · Confidential · Pending Announcement</div>
+  <div class="clv-stamp">ACCESS DENIED</div>
+</div>
+
+   ================================================================ */
