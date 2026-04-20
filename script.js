@@ -584,9 +584,6 @@ function initEventHover() {
   });
 }
 
-/* ════════════════════════════════════════════════
-   CONTACT FX — input focus particles
-════════════════════════════════════════════════ */
 function initContactFx() {
   document.querySelectorAll('.cf-field input, .cf-field textarea').forEach(input => {
     input.addEventListener('focus', () => {
@@ -601,11 +598,7 @@ function initContactFx() {
     });
   });
 }
-
-/* ════════════════════════════════════════════════
-   LOCKSCREEN
-════════════════════════════════════════════════ */
-const LS_CODE = '';
+const LS_CODE = '0608';
 const LS_URL  = 'https://the-aurora-forum-mun-demo.vercel.app/'; // placeholder — swap for real URL
 let lsInput   = '';
 let lsLocked  = false;
