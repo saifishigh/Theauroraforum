@@ -274,114 +274,141 @@
     </div>
   </section>
 
-  <!-- TAFMUN REGISTRATION -->
+  <!-- TAFMUN REGISTRATION (landing removed) -->
   <section class="page" id="page-tafmun" aria-label="TAFMUN Registration">
-    <div class="pg-head">
-      <div class="pg-label">Registration</div>
-      <h2 class="pg-title">TAFMUN Registration</h2>
-      <p class="pg-sub">Complete all required information and submit your payment proof</p>
-    </div>
-    
-    <div class="taf-layout">
-      <!-- Form side -->
-      <div class="taf-form-side">
-        <div class="taf-form-card">
-          <div class="taf-form-hd">
-            <div class="eyebrow">Participant Details</div>
-            <h3 class="taf-form-title">Registration Form</h3>
-          </div>
-          <div class="cform">
-            <!-- Full Name -->
-            <div class="cf-field">
-              <label for="taf-name">Full Name</label>
-              <input id="taf-name" type="text" placeholder="Enter your full name" autocomplete="name">
-              <div class="cf-field-bar"></div>
-              <div class="taf-error-msg" id="taf-name-error">Please enter your full name.</div>
+    <div class="taf-form-wrap">
+      <div class="pg-head">
+        <div class="pg-label">Registration</div>
+        <h2 class="pg-title">TAFMUN Registration</h2>
+        <p class="pg-sub">Complete all required information and submit your payment proof</p>
+      </div>
+      
+      <div class="taf-layout">
+        <!-- Form side -->
+        <div class="taf-form-side">
+          <div class="taf-form-card">
+            <div class="taf-form-hd">
+              <div class="eyebrow">Participant Details</div>
+              <h3 class="taf-form-title">Registration Form</h3>
             </div>
-            
-            <!-- Grade -->
-            <div class="cf-field">
-              <label for="taf-grade">Grade</label>
-              <select id="taf-grade">
-                <option value="">Select your grade</option>
-                <option value="grade-8">Grade 8</option>
-                <option value="grade-9">Grade 9</option>
-                <option value="grade-10">Grade 10</option>
-                <option value="grade-11">Grade 11</option>
-                <option value="grade-12">Grade 12</option>
-                <option value="college">College / University</option>
-              </select>
-              <div class="cf-field-bar"></div>
-              <div class="taf-error-msg" id="taf-grade-error">Please select your grade.</div>
-            </div>
-            
-            <!-- School / College -->
-            <div class="cf-field">
-              <label for="taf-school">School / College Name</label>
-              <input id="taf-school" type="text" placeholder="Enter your institution name" autocomplete="organization">
-              <div class="cf-field-bar"></div>
-              <div class="taf-error-msg" id="taf-school-error">Please enter your school or college name.</div>
-            </div>
-            
-            <!-- Committee -->
-            <div class="cf-field">
-              <label for="taf-committee">Committee</label>
-              <select id="taf-committee">
-                <option value="">Select a committee</option>
-              </select>
-              <div class="cf-field-bar"></div>
-              <div class="taf-error-msg" id="taf-committee-error">Please select a committee.</div>
-            </div>
-            
-            <!-- Payment Screenshot -->
-            <div class="cf-field">
-              <label for="taf-payment-proof">Upload Payment Screenshot</label>
-              <p class="taf-upload-hint">Upload a screenshot showing proof of your Rs. 2,200 payment</p>
-              <div class="taf-upload-area" id="taf-upload-area">
-                <input type="file" id="taf-payment-proof" accept="image/jpeg,image/png,image/webp">
-                <div class="taf-upload-inner">
-                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                  <span class="taf-upload-text" id="taf-upload-text">Click to upload your payment screenshot</span>
-                  <span class="taf-upload-file" id="taf-upload-file"></span>
-                </div>
+            <div class="cform">
+              <!-- Full Name -->
+              <div class="cf-field">
+                <label for="taf-name">Full Name</label>
+                <input id="taf-name" type="text" placeholder="Enter your full name" autocomplete="name">
+                <div class="cf-field-bar"></div>
+                <div class="taf-error-msg" id="taf-name-error">Please enter your full name.</div>
               </div>
-              <div class="taf-error-msg" id="taf-file-error">Please upload your payment screenshot.</div>
+              
+              <!-- Phone Number -->
+              <div class="cf-field">
+                <label for="taf-phone">Phone Number</label>
+                <input id="taf-phone" type="tel" placeholder="+92 3XX XXXXXXX" autocomplete="tel">
+                <div class="cf-field-bar"></div>
+                <div class="taf-error-msg" id="taf-phone-error">Please enter a valid phone number.</div>
+              </div>
+              
+              <!-- Grade -->
+              <div class="cf-field">
+                <label for="taf-grade">Grade</label>
+                <select id="taf-grade">
+                  <option value="">Select your grade</option>
+                  <option value="grade-8">Grade 8</option>
+                  <option value="grade-9">Grade 9</option>
+                  <option value="grade-10">Grade 10</option>
+                  <option value="grade-11">Grade 11</option>
+                  <option value="grade-12">Grade 12</option>
+                  <option value="college">College / University</option>
+                </select>
+                <div class="cf-field-bar"></div>
+                <div class="taf-error-msg" id="taf-grade-error">Please select your grade.</div>
+              </div>
+              
+              <!-- School / College -->
+              <div class="cf-field">
+                <label for="taf-school">School / College Name</label>
+                <input id="taf-school" type="text" placeholder="Enter your institution name" autocomplete="organization">
+                <div class="cf-field-bar"></div>
+                <div class="taf-error-msg" id="taf-school-error">Please enter your school or college name.</div>
+              </div>
+              
+              <!-- Committee Preferences -->
+              <div class="cf-field">
+                <label for="taf-committee-1">1st Committee Preference</label>
+                <select id="taf-committee-1">
+                  <option value="">Select a committee</option>
+                </select>
+                <div class="cf-field-bar"></div>
+                <div class="taf-error-msg" id="taf-committee-1-error">Please select your 1st preference.</div>
+              </div>
+              
+              <div class="cf-field">
+                <label for="taf-committee-2">2nd Committee Preference</label>
+                <select id="taf-committee-2">
+                  <option value="">Select a committee</option>
+                </select>
+                <div class="cf-field-bar"></div>
+                <div class="taf-error-msg" id="taf-committee-2-error">Please select your 2nd preference.</div>
+              </div>
+              
+              <div class="cf-field">
+                <label for="taf-committee-3">3rd Committee Preference</label>
+                <select id="taf-committee-3">
+                  <option value="">Select a committee</option>
+                </select>
+                <div class="cf-field-bar"></div>
+                <div class="taf-error-msg" id="taf-committee-3-error">Please select your 3rd preference.</div>
+              </div>   
+              <!-- Payment Screenshot -->
+              <div class="cf-field">
+                <label for="taf-payment-proof">Upload Payment Screenshot</label>
+                <p class="taf-upload-hint">Upload a screenshot showing proof of your Rs. 2,200 payment</p>
+                <div class="taf-upload-area" id="taf-upload-area">
+                  <input type="file" id="taf-payment-proof" accept="image/jpeg,image/png,image/webp">
+                  <div class="taf-upload-inner">
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span class="taf-upload-text" id="taf-upload-text">Click to upload your payment screenshot</span>
+                    <span class="taf-upload-file" id="taf-upload-file"></span>
+                  </div>
+                </div>
+                <div class="taf-error-msg" id="taf-file-error">Please upload your payment screenshot.</div>
+              </div>
             </div>
+            <button class="btn-send" id="taf-submit-btn" onclick="submitTAFMUN()">
+              <span class="btn-send-txt">Submit Registration</span>
+              <span class="btn-send-icon">✦</span>
+              <div class="btn-send-glow"></div>
+            </button>
           </div>
-          <button class="btn-send" id="taf-submit-btn" onclick="submitTAFMUN()">
-            <span class="btn-send-txt">Submit Registration</span>
-            <span class="btn-send-icon">✦</span>
-            <div class="btn-send-glow"></div>
-          </button>
+        </div>
+        
+        <!-- Info side -->
+        <div class="taf-info-side">
+          <div class="taf-payment-card">
+            <div class="eyebrow">Payment</div>
+            <h3 class="taf-payment-title">Registration Fee</h3>
+            <div class="taf-fee" id="taf-fee">Rs. 2,200</div>
+            <div class="taf-payment-sep"></div>
+            <h4 class="taf-payment-h4">EasyPaisa Payment</h4>
+            <p class="taf-payment-desc">Send the registration fee via EasyPaisa to:</p>
+            <div class="taf-easypaisa-number" id="taf-easypaisa-number">03XXXXXXXXX</div>
+            <ol class="taf-steps">
+              <li>Send Rs. 2,200 through EasyPaisa to the number above.</li>
+              <li>Complete the registration form.</li>
+              <li>Upload a screenshot/proof of the payment.</li>
+              <li>Submit the registration.</li>
+            </ol>
+          </div>
         </div>
       </div>
       
-      <!-- Info side -->
-      <div class="taf-info-side">
-        <div class="taf-payment-card">
-          <div class="eyebrow">Payment</div>
-          <h3 class="taf-payment-title">Registration Fee</h3>
-          <div class="taf-fee" id="taf-fee">Rs. 2,200</div>
-          <div class="taf-payment-sep"></div>
-          <h4 class="taf-payment-h4">EasyPaisa Payment</h4>
-          <p class="taf-payment-desc">Send the registration fee via EasyPaisa to:</p>
-          <div class="taf-easypaisa-number" id="taf-easypaisa-number">03XXXXXXXXX</div>
-          <ol class="taf-steps">
-            <li>Send Rs. 2,200 through EasyPaisa to the number above.</li>
-            <li>Complete the registration form.</li>
-            <li>Upload a screenshot/proof of the payment.</li>
-            <li>Submit the registration.</li>
-          </ol>
+      <!-- Success state -->
+      <div id="taf-success" class="taf-success" style="display:none;" aria-live="polite">
+        <div class="taf-success-inner">
+          <div class="taf-success-icon">✓</div>
+          <h3 class="taf-success-title">Registration Submitted!</h3>
+          <p class="taf-success-desc">Your TAFMUN registration has been received successfully. Our team will contact you via email with further details.</p>
         </div>
-      </div>
-    </div>
-    
-    <!-- Success state -->
-    <div id="taf-success" class="taf-success" style="display:none;" aria-live="polite">
-      <div class="taf-success-inner">
-        <div class="taf-success-icon">✓</div>
-        <h3 class="taf-success-title">Registration Submitted!</h3>
-        <p class="taf-success-desc">Your TAFMUN registration has been received successfully. Our team will contact you via email with further details.</p>
       </div>
     </div>
   </section>

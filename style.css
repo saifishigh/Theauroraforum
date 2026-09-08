@@ -1,5 +1,5 @@
 /* ============================================================
-   THE AURORA FORUM — STYLE v6 (MUN removed)
+   THE AURORA FORUM — STYLE v8 (landing removed)
    ============================================================ */
 
 :root {
@@ -276,7 +276,7 @@ a:hover { color:var(--cream); text-decoration:underline; }
 .av-name { font-family:var(--fb); font-style:italic; font-size:0.65rem; color:var(--txt2); line-height:1.3; }
 .av-bio { font-family:var(--fb); font-style:italic; font-size:0.62rem; line-height:1.55; color:var(--txt2); }
 
-/* TAFMUN REGISTRATION */
+/* ===== TAFMUN REGISTRATION (landing removed, form visible immediately) ===== */
 .taf-layout { display:grid; grid-template-columns:1fr 360px; gap:0; }
 .taf-form-side { padding:48px clamp(28px,5vw,64px); border-right:1px solid var(--bdr); }
 .taf-form-card { max-width:640px; }
@@ -307,6 +307,25 @@ a:hover { color:var(--cream); text-decoration:underline; }
 .taf-success-icon { width:64px; height:64px; margin:0 auto 20px; border-radius:50%; background:rgba(60,180,100,0.12); border:1px solid rgba(60,180,100,0.4); display:flex; align-items:center; justify-content:center; font-size:2rem; color:rgba(60,200,100,0.9); box-shadow:0 0 24px rgba(60,200,100,0.2); }
 .taf-success-title { font-family:var(--fp); font-size:1.5rem; font-weight:900; color:var(--cream); margin-bottom:12px; }
 .taf-success-desc { font-family:var(--fb); font-style:italic; font-size:0.9rem; color:var(--txt2); line-height:1.6; }
+
+/* Phone field refinement */
+#taf-phone { font-variant-numeric: tabular-nums; }
+
+/* Committee select refinement */
+select[id^="taf-committee-"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='%237b3fc4'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; cursor: pointer; }
+
+/* Radio buttons for previous MUN */
+.taf-mun-exp { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.taf-radio { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border: 1px solid var(--bdr); border-radius: 6px; cursor: pointer; transition: all 0.3s ease; background: rgba(26,26,26,0.4); }
+.taf-radio:hover { border-color: var(--gold2); background: rgba(120,60,200,0.05); }
+.taf-radio input[type="radio"] { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; border: 2px solid var(--txt3); border-radius: 50%; transition: all 0.3s ease; margin: 0; flex-shrink: 0; }
+.taf-radio input[type="radio"]:checked { border-color: var(--gold); background: radial-gradient(circle, var(--gold) 40%, transparent 50%); box-shadow: 0 0 8px rgba(120,60,200,0.4); }
+.taf-radio:has(input[type="radio"]:checked) { border-color: var(--gold); background: rgba(120,60,200,0.1); transform: scale(1.02); box-shadow: 0 0 12px rgba(120,60,200,0.15); }
+.taf-radio span { font-family: var(--fb); font-size: 0.85rem; color: var(--txt); }
+
+/* Improved select styling globally (grade + committees) */
+select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='%237b3fc4'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; }
+select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px rgba(120,60,200,0.2); }
 
 /* Events */
 .pg-intro { font-family:var(--fb); font-size:0.9rem; line-height:1.75; color:var(--txt2); padding:32px clamp(32px,6vw,72px); border-bottom:1px solid var(--bdr); max-width:700px; }
@@ -471,6 +490,8 @@ a:hover { color:var(--cream); text-decoration:underline; }
   .taf-info-side { padding:28px 20px; }
   .taf-fee { font-size:2rem; }
   .taf-easypaisa-number { font-size:1.1rem; padding:10px 14px; }
+  .taf-mun-exp { flex-direction: column; }
+  .taf-radio { padding:10px 12px; }
 }
 @media (max-width:380px) {
   .dock-shell { padding:6px 6px; gap:0; border-radius:22px; }

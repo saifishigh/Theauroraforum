@@ -1,5 +1,5 @@
 /* ============================================================
-   THE AURORA FORUM — SCRIPT v6 (MUN removed)
+   THE AURORA FORUM — SCRIPT v7 (TAFMUN enhancements)
    ============================================================ */
 
 const state = { currentPage: 'front', transitioning: false };
@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initEventHover();
   initContactFx();
   initTAFMUNConfig();
+  initTAFMUNLanding();
 });
 
 /* ── DATES ── */
@@ -79,6 +80,11 @@ function navigate(pageId) {
     const target = document.getElementById('page-' + pageId);
     if (target) target.classList.add('active');
     state.currentPage = pageId;
+
+    // Reset TAFMUN landing state when navigating to TAFMUN
+    if (pageId === 'tafmun') {
+      resetTAFMUNLanding();
+    }
 
     document.querySelectorAll('[data-page]').forEach(el => {
       el.classList.toggle('active', el.dataset.page === pageId);
@@ -522,26 +528,81 @@ function initContactFx() {
 }
 
 /* ════════════════════════════════════════════════
-   TAFMUN REGISTRATION LOGIC
+   TAFMUN REGISTRATION LOGIC (enhanced)
    ════════════════════════════════════════════════ */
 
-function initTAFMUNConfig() {
-  const committeeSelect = document.getElementById('taf-committee');
-  if (committeeSelect) {
-    TAFMUN_CONFIG.committees.forEach((committee, index) => {
-      const option = document.createElement('option');
-      option.value = committee;
-      option.textContent = committee;
-      committeeSelect.appendChild(option);
-    });
-  }
+/* Landing overlay state */
+const tafLanding = document.getElementById('taf-landing');
+const tafLandingBtn = document.getElementById('taf-landing-btn');
+const tafFormWrap = document.getElementById('taf-form-wrap');
 
+function initTAFMUNLanding() {
+  if (!tafLandingBtn) return;
+
+  tafLandingBtn.addEventListener('click', () => {
+    // Hide landing overlay
+    tafLanding.classList.add('hidden');
+    // Trigger form drop-in animation
+    const pageTaf = document.getElementById('page-tafmun');
+    pageTaf.classList.add('taf-form-revealed');
+    // Focus first field for accessibility
+    setTimeout(() => {
+      const firstField = document.getElementById('taf-name');
+      if (firstField) firstField.focus({ preventScroll: true });
+    }, 600);
+  });
+}
+
+function resetTAFMUNLanding() {
+  const pageTaf = document.getElementById('page-tafmun');
+  if (!pageTaf) return;
+  pageTaf.classList.remove('taf-form-revealed');
+  if (tafLanding) {
+    tafLanding.classList.remove('hidden');
+  }
+  // Reset any success state
+  const successEl = document.getElementById('taf-success');
+  if (successEl) successEl.style.display = 'none';
+  // Show form side again
+  const formSide = document.querySelector('.taf-form-side');
+  const infoSide = document.querySelector('.taf-info-side');
+  if (formSide) formSide.style.display = '';
+  if (infoSide) infoSide.style.display = '';
+}
+
+function initTAFMUNConfig() {
+  // Populate committee dropdowns
+  const committeeSelects = ['taf-committee-1', 'taf-committee-2', 'taf-committee-3'];
+  committeeSelects.forEach(id => {
+    const select = document.getElementById(id);
+    if (select) {
+      TAFMUN_CONFIG.committees.forEach(committee => {
+        const option = document.createElement('option');
+        option.value = committee;
+        option.textContent = committee;
+        select.appendChild(option);
+      });
+    }
+  });
+
+  // Dynamic committee selection - prevent duplicates
+  [1, 2, 3].forEach(index => {
+    const select = document.getElementById(`taf-committee-${index}`);
+    if (select) {
+      select.addEventListener('change', () => {
+        updateCommitteeOptions();
+      });
+    }
+  });
+
+  // Fee and EasyPaisa display
   const feeEl = document.getElementById('taf-fee');
   if (feeEl) feeEl.textContent = `Rs. ${TAFMUN_CONFIG.fee.toLocaleString()}`;
   
   const epEl = document.getElementById('taf-easypaisa-number');
   if (epEl) epEl.textContent = TAFMUN_CONFIG.easypaisaNumber;
 
+  // File upload
   const fileInput = document.getElementById('taf-payment-proof');
   const fileText = document.getElementById('taf-upload-file');
   const uploadText = document.getElementById('taf-upload-text');
@@ -566,6 +627,27 @@ function initTAFMUNConfig() {
   }
 }
 
+function updateCommitteeOptions() {
+  const selects = [1, 2, 3].map(i => document.getElementById(`taf-committee-${i}`));
+  const selected = selects.map(sel => sel.value).filter(v => v !== '');
+  
+  selects.forEach((select, index) => {
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">Select a committee</option>';
+    TAFMUN_CONFIG.committees.forEach(committee => {
+      const option = document.createElement('option');
+      option.value = committee;
+      option.textContent = committee;
+      // Disable if already selected in another dropdown
+      if (selected.includes(committee) && committee !== currentValue) {
+        option.disabled = true;
+      }
+      select.appendChild(option);
+    });
+    select.value = currentValue;
+  });
+}
+
 async function submitTAFMUN() {
   const btn = document.getElementById('taf-submit-btn');
   if (!btn || btn.disabled) return;
@@ -573,18 +655,104 @@ async function submitTAFMUN() {
   document.querySelectorAll('.taf-error-msg').forEach(el => el.style.display = 'none');
 
   const fullName = document.getElementById('taf-name').value.trim();
+  const phone = document.getElementById('taf-phone').value.trim();
   const grade = document.getElementById('taf-grade').value;
   const school = document.getElementById('taf-school').value.trim();
-  const committee = document.getElementById('taf-committee').value;
+  const committee1 = document.getElementById('taf-committee-1').value;
+  const committee2 = document.getElementById('taf-committee-2').value;
+  const committee3 = document.getElementById('taf-committee-3').value;
+  const prevMun = document.querySelector('input[name="taf-prev-mun"]:checked');
+  const prevMunValue = prevMun ? prevMun.value : '';
   const fileInput = document.getElementById('taf-payment-proof');
   const file = fileInput.files[0];
 
   let valid = true;
-  if (!fullName) { const err = document.getElementById('taf-name-error'); if (err) err.style.display = 'block'; valid = false; }
-  if (!grade) { const err = document.getElementById('taf-grade-error'); if (err) err.style.display = 'block'; valid = false; }
-  if (!school) { const err = document.getElementById('taf-school-error'); if (err) err.style.display = 'block'; valid = false; }
-  if (!committee) { const err = document.getElementById('taf-committee-error'); if (err) err.style.display = 'block'; valid = false; }
-  if (!file) { const err = document.getElementById('taf-file-error'); if (err) err.style.display = 'block'; valid = false; }
+
+  // Name validation
+  if (!fullName) { 
+    const err = document.getElementById('taf-name-error'); 
+    if (err) err.style.display = 'block'; 
+    valid = false; 
+  }
+
+  // Phone validation
+  if (!phone) {
+    const err = document.getElementById('taf-phone-error');
+    if (err) err.textContent = 'Phone number is required.';
+    if (err) err.style.display = 'block';
+    valid = false;
+  } else if (!/^[0-9+\-\s()]{7,20}$/.test(phone)) {
+    const err = document.getElementById('taf-phone-error');
+    if (err) err.textContent = 'Please enter a valid phone number (digits, +, -, spaces).';
+    if (err) err.style.display = 'block';
+    valid = false;
+  }
+
+  // Grade validation
+  if (!grade) { 
+    const err = document.getElementById('taf-grade-error'); 
+    if (err) err.style.display = 'block'; 
+    valid = false; 
+  }
+
+  // School validation
+  if (!school) { 
+    const err = document.getElementById('taf-school-error'); 
+    if (err) err.style.display = 'block'; 
+    valid = false; 
+  }
+
+  // Committee validation
+  if (!committee1) { 
+    const err = document.getElementById('taf-committee-1-error'); 
+    if (err) err.style.display = 'block'; 
+    valid = false; 
+  }
+  if (!committee2) { 
+    const err = document.getElementById('taf-committee-2-error'); 
+    if (err) err.style.display = 'block'; 
+    valid = false; 
+  }
+  if (!committee3) { 
+    const err = document.getElementById('taf-committee-3-error'); 
+    if (err) err.style.display = 'block'; 
+    valid = false; 
+  }
+
+  // Duplicate committee check
+  if (committee1 && committee2 && committee1 === committee2) {
+    const err = document.getElementById('taf-committee-2-error');
+    if (err) err.textContent = 'Committee preferences must be unique.';
+    if (err) err.style.display = 'block';
+    valid = false;
+  }
+  if (committee1 && committee3 && committee1 === committee3) {
+    const err = document.getElementById('taf-committee-3-error');
+    if (err) err.textContent = 'Committee preferences must be unique.';
+    if (err) err.style.display = 'block';
+    valid = false;
+  }
+  if (committee2 && committee3 && committee2 === committee3) {
+    const err = document.getElementById('taf-committee-3-error');
+    if (err) err.textContent = 'Committee preferences must be unique.';
+    if (err) err.style.display = 'block';
+    valid = false;
+  }
+
+  // Previous MUN validation
+  if (!prevMunValue) {
+    const err = document.getElementById('taf-prev-mun-error');
+    if (err) err.style.display = 'block';
+    valid = false;
+  }
+
+  // File validation
+  if (!file) { 
+    const err = document.getElementById('taf-file-error'); 
+    if (err) err.style.display = 'block'; 
+    valid = false; 
+  }
+
   if (!valid) return;
 
   const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -611,7 +779,18 @@ async function submitTAFMUN() {
       const response = await fetch('/api/send-registration', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName, grade, school, committee, paymentProofBase64: base64, paymentProofMime: mime })
+        body: JSON.stringify({
+          fullName,
+          phoneNumber: phone,
+          grade,
+          school,
+          committee1,
+          committee2,
+          committee3,
+          prevMunSessions: prevMunValue,
+          paymentProofBase64: base64,
+          paymentProofMime: mime
+        })
       });
 
       const data = await response.json();
