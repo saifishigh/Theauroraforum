@@ -19,10 +19,23 @@
       ]
     },
     {
+<<<<<<< HEAD
+=======
+      "source": "/images/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+      ]
+    },
+    {
+>>>>>>> b9c6b0c4f77344f4ce57a8183fbb8fca62f66a6a
       "source": "/(.*\\.html|/)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
       ]
     }
   ]
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> b9c6b0c4f77344f4ce57a8183fbb8fca62f66a6a
