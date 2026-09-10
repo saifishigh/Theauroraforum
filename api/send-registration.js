@@ -11,7 +11,7 @@ import { Resend } from 'resend';
  *                paymentProofBase64, paymentProofMime
  * Standard-only: firstPriority, secondPriority, thirdPriority
  * Special-only:  email, watchedGoT, westerosFamiliarity, crisisBefore,
- *                crisisExperience, munExperience, strategy
+ *                crisisExperience, munExperience
  */
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -56,15 +56,11 @@ export default async function handler(req, res) {
   } else {
     const {
       email, watchedGoT, westerosFamiliarity, crisisBefore,
-      crisisExperience, munExperience, strategy
+      crisisExperience, munExperience
     } = body;
 
-    if (!email || !watchedGoT || !westerosFamiliarity || !crisisBefore || !munExperience || !strategy) {
+    if (!email || !watchedGoT || !westerosFamiliarity || !crisisBefore || !munExperience) {
       return res.status(400).json({ error: 'Missing required special registration fields.' });
-    }
-    const wordCount = strategy.trim().split(/\s+/).filter(Boolean).length;
-    if (wordCount > 100) {
-      return res.status(400).json({ error: 'Strategy response must be 100 words or less.' });
     }
     if (crisisBefore === 'Yes' && !crisisExperience) {
       return res.status(400).json({ error: 'Crisis Committee experience details are required.' });
@@ -74,7 +70,7 @@ export default async function handler(req, res) {
     html = renderSpecialEmail({
       fullName, email, phoneNumber, grade, school,
       watchedGoT, westerosFamiliarity, crisisBefore,
-      crisisExperience, munExperience, strategy
+      crisisExperience, munExperience
     });
   }
 
@@ -217,11 +213,6 @@ function renderSpecialEmail(d) {
         (d.crisisBefore === 'Yes' ? row('Crisis Committee experience', d.crisisExperience || '—') : '') +
         row('MUN experience', d.munExperience)
       )}
-
-      ${sectionTitle('Strategy Response')}
-      <div style="border:1px solid #ddd; padding:12px; background:#fafafa; font-size:13px; line-height:1.6; white-space:pre-wrap;">
-        ${esc(d.strategy)}
-      </div>
 
       ${sectionTitle('Payment Details')}
       ${table(

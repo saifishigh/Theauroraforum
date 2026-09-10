@@ -1,5 +1,5 @@
 /* ============================================================
-   THE AURORA FORUM — SCRIPT v8 (Standard + Special TAFMUN)
+   THE AURORA FORUM — SCRIPT v9
    ============================================================ */
 
 const state = { currentPage: 'front', transitioning: false };
@@ -576,7 +576,6 @@ function backToLanding() {
 function resetTAFMUNLanding() {
   backToLanding();
 
-  // Reset standard
   const stdSuccess = document.getElementById('taf-success');
   if (stdSuccess) stdSuccess.style.display = 'none';
   const stdForm = document.querySelector('#taf-view-standard .taf-form-side');
@@ -584,7 +583,6 @@ function resetTAFMUNLanding() {
   if (stdForm) stdForm.style.display = '';
   if (stdInfo) stdInfo.style.display = '';
 
-  // Reset special
   const spSuccess = document.getElementById('taf-special-success');
   if (spSuccess) spSuccess.style.display = 'none';
   const spForm = document.querySelector('#taf-view-special .taf-form-side');
@@ -793,19 +791,6 @@ function initTAFMUNSpecial() {
       }
     });
   });
-
-  const strategy = document.getElementById('tsf-strategy');
-  const counter  = document.getElementById('tsf-word-count');
-  if (strategy && counter) {
-    const update = () => {
-      const words = strategy.value.trim() ? strategy.value.trim().split(/\s+/).filter(Boolean).length : 0;
-      counter.textContent = `${words} / 100 words`;
-      counter.classList.toggle('over', words > 100);
-      counter.classList.toggle('warn', words > 80 && words <= 100);
-    };
-    strategy.addEventListener('input', update);
-    update();
-  }
 }
 
 /* ── Submit special ────────────────────────────────────────── */
@@ -830,11 +815,8 @@ async function submitSpecialTAFMUN() {
   const crisis     = getRadio('tsf-crisis');
   const crisisExp  = document.getElementById('tsf-crisis-exp').value.trim();
   const munExp     = document.getElementById('tsf-mun-exp').value;
-  const strategy   = document.getElementById('tsf-strategy').value.trim();
   const fileInput  = document.getElementById('tsf-payment-proof');
   const file       = fileInput.files[0];
-
-  const words = strategy ? strategy.split(/\s+/).filter(Boolean).length : 0;
 
   let valid = true;
 
@@ -850,13 +832,6 @@ async function submitSpecialTAFMUN() {
   if (!crisis)     { showErr('tsf-crisis-error');   valid = false; }
   if (crisis === 'Yes' && !crisisExp) { showErr('tsf-crisis-exp-error'); valid = false; }
   if (!munExp)     { showErr('tsf-mun-exp-error');  valid = false; }
-  if (!strategy) {
-    showErr('tsf-strategy-error', 'Please provide a strategy response.');
-    valid = false;
-  } else if (words > 100) {
-    showErr('tsf-strategy-error', `Your response is ${words} words. Please reduce it to 100 words or fewer.`);
-    valid = false;
-  }
   if (!file) { showErr('tsf-file-error'); valid = false; }
 
   if (!valid) return;
@@ -890,7 +865,6 @@ async function submitSpecialTAFMUN() {
           crisisBefore: crisis,
           crisisExperience: crisis === 'Yes' ? crisisExp : '',
           munExperience: munExp,
-          strategy,
           paymentProofBase64: base64,
           paymentProofMime:   file.type
         })
