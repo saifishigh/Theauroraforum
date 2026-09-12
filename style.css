@@ -1238,3 +1238,208 @@ select option:disabled { color:var(--txt3); background:var(--bg3); }
   .taf-section-hd { margin-bottom: 20px; }
   .taf-section .cform { gap: 22px; }
 }
+/* ============================================================
+   IN-APP BROWSER (Instagram / Facebook / TikTok / etc.) FALLBACK
+   ============================================================
+   Modern browsers keep 100% of the visual effects above.
+   WebViews get WebView-safe equivalents that preserve branding,
+   colors, layout, and typography but avoid the specific rendering
+   paths that break inside embedded browsers.
+   ============================================================ */
+
+/* ── 1. Banner (always in DOM, shown when in-app detected) ── */
+.ig-banner {
+  display: none;
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  z-index: 10001;
+  background: #141414;
+  border: 1px solid rgba(120, 60, 200, 0.4);
+  border-radius: 8px;
+  padding: 16px 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 24px rgba(120, 60, 200, 0.15);
+  font-family: 'Libre Baskerville', serif;
+  color: #e8e0f0;
+}
+.igb-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.igb-icon {
+  flex-shrink: 0;
+  color: #7b3fc4;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.igb-text { flex: 1; min-width: 0; }
+.igb-title {
+  color: #e8e0f0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+.igb-body {
+  color: #8a7fa0;
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+.igb-body strong { color: #b0a0c8; }
+.igb-close {
+  background: transparent;
+  border: 1px solid #4a4258;
+  color: #8a7fa0;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 0.65rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: inherit;
+}
+
+/* ── 2. Disable GPU-compositing traps that cause grayscale / invisible UI ── */
+html.in-app-browser .logo-bg img {
+  mix-blend-mode: normal;
+  opacity: 0.06;
+  animation: none;
+}
+html.in-app-browser .grain { display: none; }
+html.in-app-browser #cursor-canvas { display: none !important; }
+
+/* ── 3. Replace backdrop-filter on fixed elements with solid backgrounds ── */
+html.in-app-browser .topbar {
+  background: rgba(8, 6, 14, 0.98);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html.in-app-browser .dock-shell {
+  background: rgba(12, 10, 20, 0.98);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.4),
+              inset 0 1px 0 rgba(120, 60, 200, 0.12);
+}
+html.in-app-browser .dock-shell::before { display: none; }
+html.in-app-browser .cl-veil,
+html.in-app-browser .mun-veil {
+  background: rgba(8, 6, 14, 0.85);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html.in-app-browser .clv-bar,
+html.in-app-browser .mv-bar {
+  background: rgba(10, 8, 18, 0.96);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html.in-app-browser .clv-stamp,
+html.in-app-browser .mv-stamp,
+html.in-app-browser .toc-badge,
+html.in-app-browser .tsh-badge {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* ── 4. Interactive elements: pointer-events + touch action ── */
+html.in-app-browser .btn-send,
+html.in-app-browser .taf-back-btn,
+html.in-app-browser .taf-copy-btn,
+html.in-app-browser .taf-option-card,
+html.in-app-browser .teaser-btn,
+html.in-app-browser .dock-btn,
+html.in-app-browser .sn,
+html.in-app-browser .ci-link,
+html.in-app-browser .taf-radio,
+html.in-app-browser .taf-scale-item {
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(120, 60, 200, 0.25);
+}
+
+/* ── 5. Primary submit button: explicit visible styling ── */
+html.in-app-browser .btn-send {
+  background: rgba(120, 60, 200, 0.08);
+  border-color: rgba(120, 60, 200, 0.45);
+  color: #e8e0f0;
+  min-height: 48px;
+}
+html.in-app-browser .btn-send:active {
+  background: rgba(120, 60, 200, 0.2);
+  border-color: #7b3fc4;
+  color: #c8a8e8;
+}
+html.in-app-browser .btn-send-glow { opacity: 0 !important; }
+
+/* ── 6. Ensure dock is always reachable in WebViews ── */
+html.in-app-browser .dock {
+  z-index: 900;
+  padding-bottom: 12px;
+  padding-bottom: max(env(safe-area-inset-bottom, 12px), 12px);
+}
+html.in-app-browser .dock-btn {
+  min-height: 44px;
+  min-width: 52px;
+}
+html.in-app-browser .dock-btn + .dock-btn::before {
+  background: rgba(120, 60, 200, 0.15);
+}
+
+/* ── 7. Kill :hover-only reveals (WebViews fire mouseover on tap) ── */
+@media (hover: none) {
+  .btn-send:hover { border-color: var(--bdr2); color: var(--cream); }
+  .btn-send:hover .btn-send-icon { transform: none; color: var(--gold2); }
+  .cp-card:hover,
+  .taf-option-card:hover,
+  .teaser-btn:hover { transform: none; box-shadow: none; }
+  .taf-option-card:hover .toc-glow { opacity: 0; }
+  .sec-card:hover::after { opacity: 1; }  /* keep hint visible on mobile */
+  .cp-card:hover .ab-pillar-icon,
+  .ab-pillar:hover .ab-pillar-icon { transform: none; }
+}
+
+/* ── 8. Reduce heavy blur filter that fails on Android WebView ── */
+html.in-app-browser .cl-body,
+html.in-app-browser .mun-body {
+  filter: blur(3px) brightness(0.7);
+}
+
+/* ── 9. Larger tap targets and iOS auto-zoom prevention ── */
+html.in-app-browser .taf-radio,
+html.in-app-browser .taf-scale-item {
+  min-height: 48px;
+}
+html.is-ios.in-app-browser .cf-field input,
+html.is-ios.in-app-browser .cf-field select,
+html.is-ios.in-app-browser .cf-field textarea {
+  font-size: 16px !important;   /* prevents iOS focus auto-zoom, which breaks layout */
+}
+
+/* ── 10. Veil can never fully cover in-app if JS fails ── */
+html.in-app-browser #veil.covering {
+  opacity: 0.85;
+}
+
+/* ── 11. Banner visibility (class-based, works even before JS runs) ── */
+html.instagram-browser .ig-banner,
+html.facebook-browser .ig-banner {
+  display: block;
+}
+
+/* ── 12. Committee + grade selects: reliable tap in WebViews ── */
+html.in-app-browser select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: rgba(26, 26, 26, 0.6);
+  cursor: pointer;
+}
+
+/* ── 13. Dock on very small screens (in-app) ── */
+@media (max-width: 560px) {
+  .ig-banner { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); padding: 14px 16px; }
+  .igb-body { font-size: 0.72rem; }
+}

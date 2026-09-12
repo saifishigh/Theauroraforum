@@ -1,9 +1,32 @@
 /* ============================================================
-   THE AURORA FORUM — SCRIPT v10
-   - Instagram in-app browser detection + banner
-   - Robust clipboard fallback for WebView browsers
-   - Standard + Special TAFMUN registration
+   THE AURORA FORUM — SCRIPT v11
+   - Robust in-app / Instagram browser detection (runs before CSS)
+   - Safe initialization — one failure never cascades
+   - WebView-safe copy fallback
+   - Skip heavy canvas effects inside WebViews
+   - Never-leave-veil-stuck safety
    ============================================================ */
+
+/* ── BROWSER DETECTION ──
+   The inline <head> script has already populated window.__auroraBrowser
+   and added classes to <html>. This block is a defensive re-check in
+   case anything is missing. */
+(function ensureBrowserFlags() {
+  try {
+    if (window.__auroraBrowser) return;
+    var ua = navigator.userAgent || '';
+    var isInApp = /FBAN|FBAV|FB_IAB|Instagram|Messenger|KAKAOTALK|Line\/|SnapChat|Twitter|LinkedIn|Pinterest/i.test(ua)
+                || (/Android/i.test(ua) && /;\s*wv\)/i.test(ua))
+                || (/iPhone|iPad|iPod/i.test(ua) && !/Safari/i.test(ua));
+    var isInstagram = /Instagram/i.test(ua);
+    var h = document.documentElement;
+    if (isInApp) h.classList.add('in-app-browser');
+    if (isInstagram) h.classList.add('instagram-browser');
+    window.__auroraBrowser = { isInApp: isInApp, isInstagram: isInstagram };
+  } catch (e) {}
+})();
+
+const BROWSER = window.__auroraBrowser || { isInApp: false, isInstagram: false };
 
 const state = { currentPage: 'front', transitioning: false };
 const pages = ['front', 'about', 'tafmun', 'events', 'contact'];
@@ -27,33 +50,55 @@ const TAFMUN_CONFIG = {
 
 let veil, dock, main;
 
+/* ── Safe init wrapper ──
+   Ensures a single optional feature failing never blocks the page. */
+function safeInit(name, fn) {
+  try {
+    if (typeof fn === 'function') fn();
+  } catch (err) {
+    console.warn('[Aurora] init failed:', name, err);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   veil = document.getElementById('veil');
   dock = document.getElementById('dock');
   main = document.getElementById('main');
 
-  setDates();
-  initScrollReveal();
-  initKeyboard();
-  initSwipe();
-  initDockHover();
-  initScrollHide();
-  initParallaxLogo();
-  initPageEnterEffects();
-  initCursorTrail();
-  initHeroParticles();
-  initTiltCards();
-  initCounters();
-  initTypewriter();
-  initMemberFlip();
-  initEventHover();
-  initContactFx();
-  initInstagramDetection();
-  initTAFMUNBankDetails();
-  initTAFMUNStandard();
-  initTAFMUNSpecial();
-  initCopyButton('taf-copy-account');
-  initCopyButton('tsf-copy-account');
+  safeInit('dates',              setDates);
+  safeInit('scrollReveal',       initScrollReveal);
+  safeInit('keyboard',           initKeyboard);
+  safeInit('swipe',              initSwipe);
+  safeInit('dockHover',          initDockHover);
+  safeInit('scrollHide',         initScrollHide);
+  safeInit('pageEnterEffects',   initPageEnterEffects);
+  safeInit('tiltCards',          initTiltCards);
+  safeInit('counters',           initCounters);
+  safeInit('typewriter',         initTypewriter);
+  safeInit('memberFlip',         initMemberFlip);
+  safeInit('eventHover',         initEventHover);
+  safeInit('contactFx',          initContactFx);
+  safeInit('instagramDetection', initInstagramDetection);
+  safeInit('bankDetails',        initTAFMUNBankDetails);
+  safeInit('standardInit',       initTAFMUNStandard);
+  safeInit('specialInit',        initTAFMUNSpecial);
+  safeInit('copyTaf',            () => initCopyButton('taf-copy-account'));
+  safeInit('copyTsf',            () => initCopyButton('tsf-copy-account'));
+
+  /* Heavy optional effects — skipped inside WebViews where they cause
+     tap interception and GPU compositing issues. */
+  if (!BROWSER.isInApp) {
+    safeInit('parallaxLogo',  initParallaxLogo);
+    safeInit('cursorTrail',   initCursorTrail);
+    safeInit('heroParticles', initHeroParticles);
+  } else {
+    // Kill the floating logo animation but keep the element
+    const logoImg = document.querySelector('.logo-bg img');
+    if (logoImg) logoImg.style.animation = 'none';
+  }
+
+  // Always remove the veil on load, whatever happened before
+  if (veil) veil.classList.remove('covering');
 });
 
 /* ── DATES ── */
@@ -74,7 +119,7 @@ function navigate(pageId) {
   if (state.currentPage === pageId || state.transitioning) return;
   state.transitioning = true;
 
-  if (navigator.vibrate) navigator.vibrate(8);
+  try { if (navigator.vibrate) navigator.vibrate(8); } catch (e) {}
 
   const btn = dock ? dock.querySelector('[data-page="' + pageId + '"]') : null;
   if (btn) {
@@ -93,31 +138,36 @@ function navigate(pageId) {
   if (veil) veil.classList.add('covering');
 
   setTimeout(() => {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const target = document.getElementById('page-' + pageId);
-    if (target) target.classList.add('active');
-    state.currentPage = pageId;
+    try {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active');
+      state.currentPage = pageId;
 
-    if (pageId === 'tafmun') {
-      resetTAFMUNLanding();
+      if (pageId === 'tafmun') resetTAFMUNLanding();
+
+      document.querySelectorAll('[data-page]').forEach(el => {
+        el.classList.toggle('active', el.dataset.page === pageId);
+      });
+
+      initScrollReveal();
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    } catch (err) {
+      console.warn('[Aurora] navigate error:', err);
+    } finally {
+      // Veil and transition are ALWAYS released
+      if (veil) veil.classList.remove('covering');
+      setTimeout(() => { state.transitioning = false; }, 280);
     }
-
-    document.querySelectorAll('[data-page]').forEach(el => {
-      el.classList.toggle('active', el.dataset.page === pageId);
-    });
-
-    initScrollReveal();
-    window.scrollTo({ top: 0, behavior: 'instant' });
-
-    if (veil) veil.classList.remove('covering');
-    setTimeout(() => { state.transitioning = false; }, 280);
   }, 240);
 }
 window.navigate = navigate;
 
-/* ── DOCK HOVER (magnetic) ── */
+/* ── DOCK HOVER (magnetic) — desktop only ── */
 function initDockHover() {
   if (!dock) return;
+  if (BROWSER.isInApp) return;
+  if (window.matchMedia('(pointer:coarse)').matches) return;
   const shell = dock.querySelector('.dock-shell');
   const btns  = dock.querySelectorAll('.dock-btn');
   if (!shell || !btns.length) return;
@@ -158,9 +208,12 @@ function initDockHover() {
   });
 }
 
-/* ── DOCK SCROLL HIDE ── */
+/* ── DOCK SCROLL HIDE — desktop only; disabled in-app to avoid stuck pointer-events ── */
 function initScrollHide() {
   if (!dock) return;
+  if (BROWSER.isInApp) return;                       // never hide inside WebViews
+  if (window.matchMedia('(pointer:coarse)').matches) return;
+
   dock.style.transition = 'transform 0.45s cubic-bezier(0.34,1.4,0.64,1), opacity 0.3s ease';
   let lastY = 0, ticking = false;
   window.addEventListener('scroll', () => {
@@ -170,12 +223,12 @@ function initScrollHide() {
       const y    = window.scrollY;
       const diff = y - lastY;
       if (diff > 55 && y > 180) {
-        dock.style.transform    = 'translateY(110%)';
-        dock.style.opacity      = '0';
+        dock.style.transform     = 'translateY(110%)';
+        dock.style.opacity       = '0';
         dock.style.pointerEvents = 'none';
       } else if (diff < -15 || y < 80) {
-        dock.style.transform    = '';
-        dock.style.opacity      = '';
+        dock.style.transform     = '';
+        dock.style.opacity       = '';
         dock.style.pointerEvents = '';
       }
       lastY = y;
@@ -257,6 +310,7 @@ function initParallaxLogo() {
 
 /* ── PAGE ENTER STAGGER ── */
 function initPageEnterEffects() {
+  if (!('MutationObserver' in window)) return;
   const obs = new MutationObserver(mutations => {
     mutations.forEach(m => {
       m.target.querySelectorAll && staggerChildren(m.target);
@@ -294,7 +348,8 @@ function submitForm(btn) {
     btn.textContent = 'Please fill all fields';
     btn.style.cssText = 'border-color:#8b1a1a;color:#8b1a1a;';
     setTimeout(() => { btn.textContent = orig; btn.style.cssText = ''; }, 2200);
-    form.querySelector('[aria-invalid="true"]')?.focus();
+    const bad = form.querySelector('[aria-invalid="true"]');
+    if (bad && bad.focus) bad.focus();
     return;
   }
   btn.textContent = 'Message Dispatched ✦';
@@ -303,7 +358,7 @@ function submitForm(btn) {
   inputs.forEach(inp => { inp.style.opacity = '0.45'; inp.disabled = true; });
 }
 
-/* ── CURSOR TRAIL ── */
+/* ── CURSOR TRAIL — skipped in-app (see DOMContentLoaded) ── */
 function initCursorTrail() {
   if (window.matchMedia('(pointer:coarse)').matches) return;
   const canvas = document.createElement('canvas');
@@ -360,7 +415,7 @@ function initCursorTrail() {
   loop();
 }
 
-/* ── HERO PARTICLES ── */
+/* ── HERO PARTICLES — skipped in-app (see DOMContentLoaded) ── */
 function initHeroParticles() {
   const hero = document.querySelector('.hero');
   if (!hero) return;
@@ -422,8 +477,10 @@ function initHeroParticles() {
   window.addEventListener('resize', resize);
 }
 
-/* ── TILT CARDS ── */
+/* ── TILT CARDS — desktop hover only ── */
 function initTiltCards() {
+  if (window.matchMedia('(pointer:coarse)').matches) return;
+  if (BROWSER.isInApp) return;
   const cards = document.querySelectorAll('.cp-card, .pl, .sec-card, .ci-member-card, .ev');
   cards.forEach(card => {
     card.addEventListener('mousemove', e => {
@@ -443,6 +500,11 @@ function initTiltCards() {
 /* ── COUNTERS ── */
 function initCounters() {
   const els = document.querySelectorAll('[data-count]');
+  if (!els.length) return;
+  if (!('IntersectionObserver' in window)) {
+    els.forEach(el => { el.textContent = el.dataset.count; });
+    return;
+  }
   const obs = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
@@ -467,6 +529,7 @@ function initCounters() {
 function initTypewriter() {
   const el = document.querySelector('.hero-dek');
   if (!el) return;
+  if (BROWSER.isInApp) return; // avoid layout thrash in WebViews
   const phrases = [
     'A generation prepares to make itself heard on the world stage',
     'Leadership forged through debate and dialogue',
@@ -544,18 +607,13 @@ function initContactFx() {
 }
 
 /* ════════════════════════════════════════════════════════════════
-   INSTAGRAM IN-APP BROWSER DETECTION
+   IN-APP BROWSER BANNER
    ════════════════════════════════════════════════════════════════ */
 function initInstagramDetection() {
-  const ua = navigator.userAgent || navigator.vendor || window.opera || '';
-  const isInstagram = /Instagram/i.test(ua);
-  const isFacebook  = /FBAN|FBAV/i.test(ua);
-  const isInApp     = isInstagram || isFacebook;
-
-  if (isInApp) {
+  if (BROWSER.isInApp) {
     const banner = document.getElementById('ig-banner');
     if (banner) banner.style.display = 'block';
-    console.warn('[Aurora] In-app browser detected (' + (isInstagram ? 'Instagram' : 'Facebook') + '). File uploads may be disabled by the host app.');
+    console.warn('[Aurora] In-app browser detected. Some visual effects reduced for compatibility.');
   }
 }
 function dismissIgBanner() {
@@ -770,8 +828,10 @@ async function submitTAFMUN() {
       if (res.ok) {
         label.textContent = 'Submitted ✓';
         btn.style.cssText = 'background:rgba(60,180,100,0.1);border-color:#3cb464;color:#3cb464;';
-        document.querySelector('#taf-view-standard .taf-form-side').style.display = 'none';
-        document.querySelector('#taf-view-standard .taf-info-side').style.display = 'none';
+        const fs = document.querySelector('#taf-view-standard .taf-form-side');
+        const is = document.querySelector('#taf-view-standard .taf-info-side');
+        if (fs) fs.style.display = 'none';
+        if (is) is.style.display = 'none';
         const ok = document.getElementById('taf-success');
         if (ok) ok.style.display = 'block';
       } else {
@@ -796,7 +856,6 @@ window.submitTAFMUN = submitTAFMUN;
 
 /* ── Special registration init ─────────────────────────────── */
 function initTAFMUNSpecial() {
-  /* Committee priority dropdowns */
   [1, 2, 3].forEach(n => {
     const sel = document.getElementById(`tsf-committee-${n}`);
     if (!sel) return;
@@ -929,8 +988,10 @@ async function submitSpecialTAFMUN() {
       if (res.ok) {
         label.textContent = 'Submitted ✓';
         btn.style.cssText = 'background:rgba(60,180,100,0.1);border-color:#3cb464;color:#3cb464;';
-        document.querySelector('#taf-view-special .taf-form-side').style.display = 'none';
-        document.querySelector('#taf-view-special .taf-info-side').style.display = 'none';
+        const fs = document.querySelector('#taf-view-special .taf-form-side');
+        const is = document.querySelector('#taf-view-special .taf-info-side');
+        if (fs) fs.style.display = 'none';
+        if (is) is.style.display = 'none';
         const ok = document.getElementById('taf-special-success');
         if (ok) ok.style.display = 'block';
       } else {
@@ -966,11 +1027,15 @@ function initCopyButton(btnId) {
   const btn = document.getElementById(btnId);
   if (!btn) return;
 
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', (ev) => {
+    try {
+      if (ev && ev.preventDefault) ev.preventDefault();
+    } catch (e) {}
+
     const text = TAFMUN_CONFIG.bankAccount.accountNumber;
 
-    // Try modern Clipboard API first
-    if (navigator.clipboard && window.isSecureContext) {
+    // Modern Clipboard API — only if actually available
+    if (navigator.clipboard && window.isSecureContext && typeof navigator.clipboard.writeText === 'function') {
       navigator.clipboard.writeText(text).then(() => {
         showCopySuccess(btn);
       }).catch(() => {
@@ -986,24 +1051,30 @@ function legacyCopy(text, btn) {
   const ta = document.createElement('textarea');
   ta.value = text;
   ta.style.position = 'fixed';
+  ta.style.top = '0';
+  ta.style.left = '0';
   ta.style.opacity = '0';
-  ta.style.left = '-9999px';
+  ta.style.pointerEvents = 'none';
+  ta.setAttribute('readonly', '');
   document.body.appendChild(ta);
   ta.focus();
   ta.select();
+  ta.setSelectionRange(0, ta.value.length);
 
+  let ok = false;
   try {
-    const successful = document.execCommand('copy');
-    if (successful) {
-      showCopySuccess(btn);
-    } else {
-      alert('Could not copy automatically. Please long-press the account number to copy it.');
-    }
+    ok = document.execCommand('copy');
   } catch (err) {
-    alert('Could not copy automatically. Please long-press the account number to copy it.');
+    ok = false;
   }
 
   document.body.removeChild(ta);
+
+  if (ok) {
+    showCopySuccess(btn);
+  } else {
+    alert('Could not copy automatically. Please long-press the account number to copy it.');
+  }
 }
 
 function showCopySuccess(btn) {
