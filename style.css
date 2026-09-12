@@ -1238,3 +1238,241 @@ select option:disabled { color:var(--txt3); background:var(--bg3); }
   .taf-section-hd { margin-bottom: 20px; }
   .taf-section .cform { gap: 22px; }
 }
+
+/* ============================================================
+   CROSS-BROWSER & MOBILE COMPATIBILITY
+   Supports: iOS Safari 14+, Chrome Android, Firefox, Samsung Internet, Edge
+   ============================================================ */
+
+/* ── 1. Touch: remove 300ms tap delay on all interactive elements ── */
+a,
+button,
+[role="button"],
+input,
+select,
+textarea,
+label,
+.dock-btn,
+.teaser-btn,
+.sn,
+.taf-option-card,
+.sec-card,
+.taf-back-btn,
+.taf-copy-btn,
+.btn-send {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── 2. Momentum / inertial scrolling on iOS for scrollable areas ── */
+.main,
+body {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── 3. user-select prefixes for older browsers ── */
+.grain,
+.logo-bg,
+.scroll-hint,
+.hero::before,
+.pg-head::before {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* ── 4. transform-style / backface-visibility vendor prefixes for Firefox & older Safari ── */
+.sec-card-inner {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+.sec-card-front,
+.sec-card-back {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* ── 5. position: fixed / inset fallbacks for older browsers that don't support inset shorthand ── */
+/* Grain */
+.grain {
+  top: 0; right: 0; bottom: 0; left: 0;  /* fallback */
+  inset: 0;                                /* modern */
+}
+/* Veil */
+#veil {
+  top: 0; right: 0; bottom: 0; left: 0;
+  inset: 0;
+}
+/* cl-veil */
+.cl-veil {
+  top: 0; right: 0; bottom: 0; left: 0;
+  inset: 0;
+}
+/* cl-veil::before */
+.cl-veil::before {
+  top: 0; right: 0; bottom: 0; left: 0;
+  inset: 0;
+}
+/* hero-bg */
+.hero-bg {
+  top: 0; right: 0; bottom: 0; left: 0;
+  inset: 0;
+}
+
+/* ── 6. min() function fallbacks (IE / old browsers just get a fixed value) ── */
+.logo-bg {
+  width: 70vw;           /* fallback */
+  width: min(620px, 70vw);
+  height: 70vw;          /* fallback */
+  height: min(620px, 70vw);
+}
+.clv-bar {
+  width: 88%;            /* fallback */
+  width: min(520px, 88%);
+}
+
+/* ── 7. env() safe-area fallbacks (dock / footer on Android & older iOS) ── */
+.dock {
+  padding-bottom: 12px;  /* safe fallback */
+  padding-bottom: max(env(safe-area-inset-bottom, 12px), 12px);
+}
+.foot {
+  padding-bottom: calc(82px + 8px); /* fallback = var(--dh) + 8px */
+  padding-bottom: calc(var(--dh) + 8px);
+}
+
+/* ── 8. Responsive layout — Mobile (≤ 900px) ── */
+@media (max-width: 900px) {
+
+  /* Hide sidebar, show topbar + dock */
+  .sidebar { display: none; }
+  .topbar  { display: flex; }
+
+  /* Reset left offsets that depend on sidebar width */
+  .main { margin-left: 0; padding-top: var(--tbh); }
+  .foot { margin-left: 0; }
+
+  /* Logo watermark centres in full viewport on mobile */
+  .logo-bg { left: 50%; }
+
+  /* Hero: tighten up */
+  .hero { min-height: 80vh; }
+
+  /* Lead: stack columns */
+  .lead { grid-template-columns: 1fr; }
+  .lead-main { border-right: none; border-bottom: 1px solid var(--bdr); }
+  .lead-aside { padding: 36px clamp(24px, 5vw, 48px); }
+
+  /* Card pair: stack */
+  .card-pair { grid-template-columns: 1fr; }
+  .cp-card + .cp-card { border-left: none; border-top: 1px solid var(--bdr); }
+
+  /* Teasers: stack */
+  .teasers { grid-template-columns: 1fr; }
+  .teaser-btn { border-right: none; border-bottom: 1px solid var(--bdr); }
+  .teaser-btn:last-child { border-bottom: none; }
+
+  /* Pillars: 1 column */
+  .ab-pillars { grid-template-columns: 1fr; }
+  .ab-pillar  { border-right: none; border-bottom: 1px solid var(--bdr); }
+  .ab-pillar:last-child { border-bottom: none; }
+
+  /* Stats: stack at small widths */
+  .ab-stats { grid-template-columns: repeat(3, 1fr); } /* keep 3-col on tablet */
+
+  /* Secretariat grid: fewer cols */
+  .sec-grid { grid-template-columns: repeat(3, 1fr); }
+
+  /* TAFMUN landing: full width cards */
+  .taf-landing-grid { grid-template-columns: 1fr; }
+
+  /* TAFMUN form: stack form + payment info */
+  .taf-layout { grid-template-columns: 1fr; }
+  .taf-form-side { border-right: none; border-bottom: 1px solid var(--bdr); }
+  .taf-info-side { padding: 36px clamp(20px, 5vw, 48px); }
+
+  /* Contact layout: stack */
+  .contact-lay { grid-template-columns: 1fr !important; }
+  .cf-side  { border-right: none !important; border-bottom: 1px solid var(--bdr); }
+  .cf-r.cf-r-half { grid-template-columns: 1fr !important; }
+
+  /* Events */
+  .ev { flex-direction: column; gap: 6px; }
+  .ev-sep { display: none; }
+}
+
+/* ── 9. Tight mobile (≤ 480px) ── */
+@media (max-width: 480px) {
+
+  /* Stats: stack to 1 column */
+  .ab-stats { grid-template-columns: 1fr; }
+  .ab-stat-box { border-right: none; border-bottom: 1px solid var(--bdr); }
+  .ab-stat-box:last-child { border-bottom: none; }
+
+  /* Secretariat: 2 cols */
+  .sec-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Dock labels: hide on very small screens to save space */
+  .dock-lbl { display: none; }
+  .dock-btn  { min-width: 48px; padding: 10px 12px; }
+
+  /* Topbar name: shrink font */
+  .tb-name { font-size: 1rem; }
+
+  /* Hero text adjustments */
+  .hero-hed { font-size: clamp(1.7rem, 7vw, 2.8rem); }
+  .scroll-hint { display: none; }
+
+  /* TAFMUN special hero */
+  .tsh-title { font-size: clamp(1.4rem, 6vw, 2.2rem); }
+
+  /* Contact stats row */
+  .ct-stats { flex-direction: column; gap: 12px; }
+  .ct-stat-div { display: none; }
+}
+
+/* ── 10. iOS Safari specific ── */
+@supports (-webkit-touch-callout: none) {
+  /* Prevent callout menu on long-press of images/logos */
+  img { -webkit-touch-callout: none; }
+
+  /* Fix 100vh bug on iOS Safari (address bar height changes) */
+  body { min-height: -webkit-fill-available; }
+  html { height: -webkit-fill-available; }
+
+  /* Ensure backdrop-filter works — already have -webkit- prefixes, but confirm */
+  .dock-shell,
+  .topbar,
+  .clv-bar,
+  .clv-stamp {
+    -webkit-backdrop-filter: inherit;
+  }
+}
+
+/* ── 11. Firefox compatibility ── */
+@-moz-document url-prefix() {
+  /* Firefox doesn't support backdrop-filter by default before v103 — use fallback bg */
+  .dock-shell { background: rgba(12, 10, 20, 0.92); }
+  .topbar     { background: rgba(8, 6, 14, 0.95); }
+}
+
+/* ── 12. Reduce motion for accessibility ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .logo-bg img { animation: none; }
+}
+
+/* ── 13. High-contrast / forced-colors accessibility ── */
+@media (forced-colors: active) {
+  .dock-shell  { border: 2px solid ButtonText; }
+  .dock-btn.active { outline: 2px solid Highlight; }
+  .sn.active   { outline: 2px solid Highlight; }
+}

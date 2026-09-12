@@ -65,9 +65,15 @@ function setDates() {
 }
 
 /* ── NAVIGATE ── */
-function navigate(pageId) {
+function navigate(pageId, skipHistory) {
+  if (!pages.includes(pageId)) pageId = 'front';
   if (state.currentPage === pageId || state.transitioning) return;
   state.transitioning = true;
+
+  /* Update URL hash without triggering another navigate() call */
+  if (!skipHistory) {
+    history.pushState({ page: pageId }, '', pageId === 'front' ? '#' : '#' + pageId);
+  }
 
   if (navigator.vibrate) navigator.vibrate(8);
 
@@ -109,6 +115,57 @@ function navigate(pageId) {
   }, 240);
 }
 window.navigate = navigate;
+
+/* ── HASH ROUTING — read hash on load & handle back/forward ── */
+function getPageFromHash() {
+  const hash = (location.hash || '').replace('#', '').trim();
+  return pages.includes(hash) ? hash : 'front';
+}
+
+/* Handle browser back / forward */
+window.addEventListener('popstate', (e) => {
+  const pageId = (e.state && e.state.page) ? e.state.page : getPageFromHash();
+  /* Use skipHistory=true so we don't push a duplicate state */
+  navigateInstant(pageId);
+});
+
+/* Also handle hashchange for browsers that don't fire popstate on hash navigation */
+window.addEventListener('hashchange', () => {
+  const pageId = getPageFromHash();
+  if (pageId !== state.currentPage) navigateInstant(pageId);
+});
+
+/* Instant navigation used for popstate/hashchange (no history push, no veil animation delay) */
+function navigateInstant(pageId) {
+  if (!pages.includes(pageId)) pageId = 'front';
+  if (state.transitioning) return;
+
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + pageId);
+  if (target) target.classList.add('active');
+  state.currentPage = pageId;
+
+  if (pageId === 'tafmun') resetTAFMUNLanding();
+
+  document.querySelectorAll('[data-page]').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === pageId);
+  });
+
+  initScrollReveal();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+/* On first load, navigate to page indicated by hash (or 'front') */
+document.addEventListener('DOMContentLoaded', () => {
+  const initial = getPageFromHash();
+  if (initial !== 'front') {
+    /* Replace state so back goes all the way back, not to empty hash */
+    history.replaceState({ page: initial }, '', '#' + initial);
+    navigateInstant(initial);
+  } else {
+    history.replaceState({ page: 'front' }, '', location.href);
+  }
+}, { once: true });
 
 /* ── DOCK HOVER (magnetic) ── */
 function initDockHover() {
