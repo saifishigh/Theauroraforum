@@ -19,9 +19,7 @@
   (function () {
     try {
       var ua = navigator.userAgent || '';
-      var v  = navigator.vendor  || '';
 
-      // 1. Named embedded browsers — checked FIRST
       var isInstagram = /Instagram/i.test(ua);
       var isFacebook  = /FBAN|FBAV|FB_IAB|FB4A|FBIOS/i.test(ua);
       var isMessenger = /Messenger/i.test(ua);
@@ -34,11 +32,9 @@
       var isKakao     = /KAKAOTALK/i.test(ua);
       var isWhatsApp  = /WhatsApp/i.test(ua);
 
-      // 2. Generic Android WebView marker
       var isAndroid   = /Android/i.test(ua);
       var isAndroidWV = isAndroid && /;\s*wv\)/i.test(ua);
 
-      // 3. iOS WebKit-only (no Safari, no known browser skin)
       var isIOS       = /iPhone|iPad|iPod/i.test(ua);
       var isIOSSafari = isIOS && /Safari/i.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA/i.test(ua);
       var isIOSWV     = isIOS && !isIOSSafari && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA/i.test(ua);
@@ -48,7 +44,6 @@
                      || isLine      || isKakao    || isWhatsApp;
       var isInApp     = knownInApp || isAndroidWV || isIOSWV;
 
-      // 4. Normal browsers (only considered if not in-app)
       var isChrome    = !isInApp && /Chrome|CriOS/i.test(ua) && !/Edg|OPR|SamsungBrowser/i.test(ua);
       var isSafari    = !isInApp && /Safari/i.test(ua) && !/Chrome|CriOS|FxiOS|Edg|OPR/i.test(ua);
       var isFirefox   = !isInApp && /Firefox|FxiOS/i.test(ua);
@@ -64,7 +59,6 @@
       if (isChrome)    html.classList.add('is-chrome');
       if (isSafari)    html.classList.add('is-safari');
 
-      // Expose for later use
       window.__auroraBrowser = {
         isInApp: isInApp, isInstagram: isInstagram, isFacebook: isFacebook,
         isAndroid: isAndroid, isIOS: isIOS, isAndroidWV: isAndroidWV, isIOSWV: isIOSWV,
@@ -72,8 +66,6 @@
         isEdge: isEdge, isSamsung: isSamsung
       };
 
-      // 5. Watchdog — if JS fails to load, force-remove stuck veil
-      //    and force-show the dock after 3s
       setTimeout(function () {
         try {
           var veil = document.getElementById('veil');
@@ -87,7 +79,6 @@
         } catch (e) {}
       }, 3000);
     } catch (e) {
-      // Never let detection crash the page
       console.warn('[Aurora] detection failed', e);
     }
   })();
@@ -100,20 +91,23 @@
 </head>
 <body>
 
-<!-- Instagram / Facebook in-app banner — inline script toggles it so it
-     works even if the main script.js fails to load -->
-<div id="ig-banner" class="ig-banner" role="status" aria-live="polite">
-  <div class="igb-inner">
-    <div class="igb-icon" aria-hidden="true">✦</div>
-    <div class="igb-text">
-      <div class="igb-title">Open in Safari or Chrome</div>
-      <div class="igb-body">
+<!-- ═══════════════════════════════════════════════════════════════
+     IN-APP BROWSER BANNER — fully inline-styled so it does NOT depend
+     on style.css being loaded/cached correctly. Works even if the
+     external CSS is stale or blocked by the WebView.
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="ig-banner" role="status" aria-live="polite" style="display:none;position:fixed;left:16px;right:16px;bottom:96px;z-index:10001;background:#141414;border:1px solid rgba(120,60,200,0.45);border-radius:8px;padding:16px 18px;box-shadow:0 10px 30px rgba(0,0,0,0.6),0 0 24px rgba(120,60,200,0.18);font-family:'Libre Baskerville',Georgia,serif;color:#e8e0f0;box-sizing:border-box;-webkit-font-smoothing:antialiased;">
+  <div style="display:flex;align-items:flex-start;gap:14px;">
+    <div aria-hidden="true" style="flex-shrink:0;color:#7b3fc4;font-size:1.15rem;line-height:1;">✦</div>
+    <div style="flex:1;min-width:0;">
+      <div style="color:#e8e0f0;font-size:0.85rem;font-weight:700;margin-bottom:6px;letter-spacing:0.02em;line-height:1.3;">Open in Safari or Chrome</div>
+      <div style="color:#8a7fa0;font-size:0.75rem;line-height:1.55;">
         This app's browser blocks some features (like file uploads).
-        Tap the <strong>⋯</strong> menu at the top right and choose
-        <strong>Open in browser</strong> to complete your registration.
+        Tap the <strong style="color:#b0a0c8;">⋯</strong> menu at the top right and choose
+        <strong style="color:#b0a0c8;">Open in browser</strong> to complete your registration.
       </div>
     </div>
-    <button type="button" class="igb-close" onclick="dismissIgBanner()" aria-label="Dismiss">Close</button>
+    <button type="button" onclick="dismissIgBanner()" aria-label="Dismiss" style="background:transparent;border:1px solid #4a4258;color:#8a7fa0;border-radius:4px;padding:5px 10px;font-size:0.65rem;cursor:pointer;flex-shrink:0;letter-spacing:0.1em;text-transform:uppercase;font-family:inherit;-webkit-appearance:none;appearance:none;">Close</button>
   </div>
 </div>
 <script>
