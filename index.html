@@ -12,10 +12,17 @@
   <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IM+Fell+English:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
-
-<div class="grain" aria-hidden="true"></div>
-<div id="veil" aria-hidden="true"></div>
-<div class="logo-bg" aria-hidden="true"><img src="logo.png" alt="" draggable="false"></div>
+  <!-- Instagram / Facebook In-App Browser Banner -->
+<div id="ig-banner" style="display: none; position: fixed; bottom: 96px; left: 16px; right: 16px; background: #141414; border: 1px solid rgba(120,60,200,0.4); border-radius: 8px; padding: 16px 18px; z-index: 10000; box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 24px rgba(120,60,200,0.15); font-family: 'Libre Baskerville', serif;">
+  <div style="display: flex; align-items: flex-start; gap: 14px;">
+    <div style="flex-shrink: 0; color: #7b3fc4; font-size: 1.1rem; line-height: 1;">✦</div>
+    <div style="flex: 1; min-width: 0;">
+      <div style="color: #e8e0f0; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.02em;">Open in Safari or Chrome</div>
+      <div style="color: #8a7fa0; font-size: 0.75rem; line-height: 1.55;">Instagram's browser blocks file uploads. Tap the <strong style="color:#b0a0c8;">⋯</strong> menu at the top right and choose <strong style="color:#b0a0c8;">"Open in browser"</strong> to complete your registration.</div>
+    </div>
+    <button onclick="dismissIgBanner()" aria-label="Dismiss" style="background: transparent; border: 1px solid #4a4258; color: #8a7fa0; border-radius: 4px; padding: 5px 10px; font-size: 0.65rem; cursor: pointer; flex-shrink: 0; letter-spacing: 0.1em; text-transform: uppercase;">Close</button>
+  </div>
+</div>
 
 <!-- SIDEBAR (desktop) -->
 <aside class="sidebar" id="sidebar">

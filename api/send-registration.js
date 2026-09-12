@@ -10,10 +10,23 @@ import { Resend } from 'resend';
  * Common fields: fullName, phoneNumber, grade, school,
  *                paymentProofBase64, paymentProofMime
  * Standard-only: firstPriority, secondPriority, thirdPriority
- * Special-only:  email, watchedGoT, westerosFamiliarity, crisisBefore,
+ * Special-only:  email, firstPriority, secondPriority, thirdPriority,
+ *                watchedGoT, westerosFamiliarity, crisisBefore,
  *                crisisExperience, munExperience
  */
 export default async function handler(req, res) {
+  // ── CORS: allow requests from any origin (needed for WebView hosts
+  //    like Instagram/Facebook that sometimes strip the Origin header).
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Max-Age', '86400');
+
+  // Preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -55,7 +68,8 @@ export default async function handler(req, res) {
     });
   } else {
     const {
-      email, watchedGoT, westerosFamiliarity, crisisBefore,
+      email, firstPriority, secondPriority, thirdPriority,
+      watchedGoT, westerosFamiliarity, crisisBefore,
       crisisExperience, munExperience
     } = body;
 
@@ -65,10 +79,17 @@ export default async function handler(req, res) {
     if (crisisBefore === 'Yes' && !crisisExperience) {
       return res.status(400).json({ error: 'Crisis Committee experience details are required.' });
     }
+    if (!firstPriority || !secondPriority || !thirdPriority) {
+      return res.status(400).json({ error: 'All three committee priorities are required.' });
+    }
+    if (new Set([firstPriority, secondPriority, thirdPriority]).size !== 3) {
+      return res.status(400).json({ error: 'Committee priorities must be different.' });
+    }
 
     subject = `TAFMUN — Special Registration — The War of the Five Kings — ${fullName}`;
     html = renderSpecialEmail({
       fullName, email, phoneNumber, grade, school,
+      firstPriority, secondPriority, thirdPriority,
       watchedGoT, westerosFamiliarity, crisisBefore,
       crisisExperience, munExperience
     });
@@ -203,6 +224,13 @@ function renderSpecialEmail(d) {
         row('Committee', 'THE WAR OF THE FIVE KINGS') +
         row('Committee Type', 'Fictional Crisis Committee') +
         row('Fee', 'PKR 2,400')
+      )}
+
+      ${sectionTitle('Committee Preferences')}
+      ${table(
+        row('1st Committee Priority', d.firstPriority) +
+        row('2nd Committee Priority', d.secondPriority) +
+        row('3rd Committee Priority', d.thirdPriority)
       )}
 
       ${sectionTitle('GOT Familiarity')}

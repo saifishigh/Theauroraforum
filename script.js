@@ -1,5 +1,8 @@
 /* ============================================================
-   THE AURORA FORUM — SCRIPT v9
+   THE AURORA FORUM — SCRIPT v10
+   - Instagram in-app browser detection + banner
+   - Robust clipboard fallback for WebView browsers
+   - Standard + Special TAFMUN registration
    ============================================================ */
 
 const state = { currentPage: 'front', transitioning: false };
@@ -21,6 +24,7 @@ const TAFMUN_CONFIG = {
     "Pakistan National Assembly"
   ]
 };
+
 let veil, dock, main;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -44,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMemberFlip();
   initEventHover();
   initContactFx();
+  initInstagramDetection();
   initTAFMUNBankDetails();
   initTAFMUNStandard();
   initTAFMUNSpecial();
@@ -539,6 +544,27 @@ function initContactFx() {
 }
 
 /* ════════════════════════════════════════════════════════════════
+   INSTAGRAM IN-APP BROWSER DETECTION
+   ════════════════════════════════════════════════════════════════ */
+function initInstagramDetection() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+  const isInstagram = /Instagram/i.test(ua);
+  const isFacebook  = /FBAN|FBAV/i.test(ua);
+  const isInApp     = isInstagram || isFacebook;
+
+  if (isInApp) {
+    const banner = document.getElementById('ig-banner');
+    if (banner) banner.style.display = 'block';
+    console.warn('[Aurora] In-app browser detected (' + (isInstagram ? 'Instagram' : 'Facebook') + '). File uploads may be disabled by the host app.');
+  }
+}
+function dismissIgBanner() {
+  const banner = document.getElementById('ig-banner');
+  if (banner) banner.style.display = 'none';
+}
+window.dismissIgBanner = dismissIgBanner;
+
+/* ════════════════════════════════════════════════════════════════
    TAFMUN — LANDING, STANDARD, SPECIAL
    ════════════════════════════════════════════════════════════════ */
 
@@ -604,9 +630,9 @@ function initTAFMUNStandard() {
       opt.textContent = c;
       sel.appendChild(opt);
     });
-    sel.addEventListener('change', updatePriorityOptions);
+    sel.addEventListener('change', () => updatePriorityOptions('taf'));
   });
-  updatePriorityOptions();
+  updatePriorityOptions('taf');
 
   const fi = document.getElementById('taf-payment-proof');
   const fileText = document.getElementById('taf-upload-file');
@@ -625,8 +651,8 @@ function initTAFMUNStandard() {
   }
 }
 
-function updatePriorityOptions() {
-  const sels = [1, 2, 3].map(n => document.getElementById(`taf-committee-${n}`));
+function updatePriorityOptions(prefix) {
+  const sels = [1, 2, 3].map(n => document.getElementById(`${prefix}-committee-${n}`));
   const values = sels.map(s => s ? s.value : '');
   sels.forEach((sel, i) => {
     if (!sel) return;
@@ -638,12 +664,12 @@ function updatePriorityOptions() {
   });
 }
 
-function validatePriorities() {
-  const v = [1, 2, 3].map(n => (document.getElementById(`taf-committee-${n}`)?.value || ''));
+function validatePriorities(prefix) {
+  const v = [1, 2, 3].map(n => (document.getElementById(`${prefix}-committee-${n}`)?.value || ''));
   const errors = [
-    'taf-committee-1-error',
-    'taf-committee-2-error',
-    'taf-committee-3-error'
+    `${prefix}-committee-1-error`,
+    `${prefix}-committee-2-error`,
+    `${prefix}-committee-3-error`
   ];
   let ok = true;
 
@@ -665,7 +691,7 @@ function validatePriorities() {
   if (!ok) return false;
 
   if (new Set(v).size !== 3) {
-    const el = document.getElementById('taf-committee-2-error');
+    const el = document.getElementById(`${prefix}-committee-2-error`);
     if (el) {
       el.textContent = 'Committee priorities must be different.';
       el.style.display = 'block';
@@ -699,7 +725,7 @@ async function submitTAFMUN() {
   }
   if (!grade)  { showErr('taf-grade-error');  valid = false; }
   if (!school) { showErr('taf-school-error'); valid = false; }
-  if (!validatePriorities()) valid = false;
+  if (!validatePriorities('taf')) valid = false;
   if (!file)   { showErr('taf-file-error');   valid = false; }
 
   if (!valid) return;
@@ -711,6 +737,10 @@ async function submitTAFMUN() {
   }
   if (file.size / (1024 * 1024) > 2) {
     alert('File is too large. Maximum 2MB allowed.');
+    return;
+  }
+  if (file.size === 0) {
+    alert('The selected file appears to be empty. If you opened this page from Instagram, please open it in Safari or Chrome instead.');
     return;
   }
 
@@ -756,12 +786,30 @@ async function submitTAFMUN() {
       alert('Network error. Please try again.');
     }
   };
+  reader.onerror = function () {
+    alert('Could not read the selected file. If you opened this page from Instagram, please open it in Safari or Chrome instead.');
+    btn.disabled = false;
+  };
   reader.readAsDataURL(file);
 }
 window.submitTAFMUN = submitTAFMUN;
 
 /* ── Special registration init ─────────────────────────────── */
 function initTAFMUNSpecial() {
+  /* Committee priority dropdowns */
+  [1, 2, 3].forEach(n => {
+    const sel = document.getElementById(`tsf-committee-${n}`);
+    if (!sel) return;
+    TAFMUN_CONFIG.committees.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', () => updatePriorityOptions('tsf'));
+  });
+  updatePriorityOptions('tsf');
+
   const fi = document.getElementById('tsf-payment-proof');
   const fileText = document.getElementById('tsf-upload-file');
   const uploadText = document.getElementById('tsf-upload-text');
@@ -832,6 +880,7 @@ async function submitSpecialTAFMUN() {
   if (!crisis)     { showErr('tsf-crisis-error');   valid = false; }
   if (crisis === 'Yes' && !crisisExp) { showErr('tsf-crisis-exp-error'); valid = false; }
   if (!munExp)     { showErr('tsf-mun-exp-error');  valid = false; }
+  if (!validatePriorities('tsf')) valid = false;
   if (!file) { showErr('tsf-file-error'); valid = false; }
 
   if (!valid) return;
@@ -843,6 +892,10 @@ async function submitSpecialTAFMUN() {
   }
   if (file.size / (1024 * 1024) > 2) {
     alert('File is too large. Maximum 2MB allowed.');
+    return;
+  }
+  if (file.size === 0) {
+    alert('The selected file appears to be empty. If you opened this page from Instagram, please open it in Safari or Chrome instead.');
     return;
   }
 
@@ -861,6 +914,9 @@ async function submitSpecialTAFMUN() {
         body: JSON.stringify({
           registrationType: 'special',
           fullName, email, phoneNumber: phone, grade, school,
+          firstPriority:  document.getElementById('tsf-committee-1').value,
+          secondPriority: document.getElementById('tsf-committee-2').value,
+          thirdPriority:  document.getElementById('tsf-committee-3').value,
           watchedGoT, westerosFamiliarity: westeros,
           crisisBefore: crisis,
           crisisExperience: crisis === 'Yes' ? crisisExp : '',
@@ -889,6 +945,10 @@ async function submitSpecialTAFMUN() {
       alert('Network error. Please try again.');
     }
   };
+  reader.onerror = function () {
+    alert('Could not read the selected file. If you opened this page from Instagram, please open it in Safari or Chrome instead.');
+    btn.disabled = false;
+  };
   reader.readAsDataURL(file);
 }
 window.submitSpecialTAFMUN = submitSpecialTAFMUN;
@@ -901,25 +961,58 @@ function showErr(id, msg) {
   el.style.display = 'block';
 }
 
+/* ── Copy button with WebView-safe fallback ────────────────── */
 function initCopyButton(btnId) {
   const btn = document.getElementById(btnId);
   if (!btn) return;
+
   btn.addEventListener('click', () => {
     const text = TAFMUN_CONFIG.bankAccount.accountNumber;
-    const done = () => {
-      const orig = btn.dataset.origText || btn.textContent;
-      btn.dataset.origText = orig;
-      btn.textContent = 'Copied!';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
-    };
-    navigator.clipboard.writeText(text).then(done).catch(() => {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand('copy'); done(); } catch (e) { /* noop */ }
-      document.body.removeChild(ta);
-    });
+
+    // Try modern Clipboard API first
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => {
+        showCopySuccess(btn);
+      }).catch(() => {
+        legacyCopy(text, btn);
+      });
+    } else {
+      legacyCopy(text, btn);
+    }
   });
+}
+
+function legacyCopy(text, btn) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+
+  try {
+    const successful = document.execCommand('copy');
+    if (successful) {
+      showCopySuccess(btn);
+    } else {
+      alert('Could not copy automatically. Please long-press the account number to copy it.');
+    }
+  } catch (err) {
+    alert('Could not copy automatically. Please long-press the account number to copy it.');
+  }
+
+  document.body.removeChild(ta);
+}
+
+function showCopySuccess(btn) {
+  const orig = btn.dataset.origText || btn.textContent;
+  btn.dataset.origText = orig;
+  btn.textContent = 'Copied!';
+  btn.classList.add('copied');
+  setTimeout(() => {
+    btn.textContent = orig;
+    btn.classList.remove('copied');
+  }, 2000);
 }
