@@ -1,16 +1,11 @@
 /* ============================================================
-   THE AURORA FORUM — SCRIPT v11
-   - Robust in-app / Instagram browser detection (runs before CSS)
+   THE AURORA FORUM — SCRIPT v12
+   - Added email field to Standard registration
+   - Robust in-app / Instagram browser detection
    - Safe initialization — one failure never cascades
    - WebView-safe copy fallback
-   - Skip heavy canvas effects inside WebViews
-   - Never-leave-veil-stuck safety
    ============================================================ */
 
-/* ── BROWSER DETECTION ──
-   The inline <head> script has already populated window.__auroraBrowser
-   and added classes to <html>. This block is a defensive re-check in
-   case anything is missing. */
 (function ensureBrowserFlags() {
   try {
     if (window.__auroraBrowser) return;
@@ -31,7 +26,6 @@ const BROWSER = window.__auroraBrowser || { isInApp: false, isInstagram: false }
 const state = { currentPage: 'front', transitioning: false };
 const pages = ['front', 'about', 'tafmun', 'events', 'contact'];
 
-/* TAFMUN CONFIG – edit these values */
 const TAFMUN_CONFIG = {
   fee: 2200,
   specialFee: 2400,
@@ -50,8 +44,6 @@ const TAFMUN_CONFIG = {
 
 let veil, dock, main;
 
-/* ── Safe init wrapper ──
-   Ensures a single optional feature failing never blocks the page. */
 function safeInit(name, fn) {
   try {
     if (typeof fn === 'function') fn();
@@ -85,19 +77,15 @@ document.addEventListener('DOMContentLoaded', () => {
   safeInit('copyTaf',            () => initCopyButton('taf-copy-account'));
   safeInit('copyTsf',            () => initCopyButton('tsf-copy-account'));
 
-  /* Heavy optional effects — skipped inside WebViews where they cause
-     tap interception and GPU compositing issues. */
   if (!BROWSER.isInApp) {
     safeInit('parallaxLogo',  initParallaxLogo);
     safeInit('cursorTrail',   initCursorTrail);
     safeInit('heroParticles', initHeroParticles);
   } else {
-    // Kill the floating logo animation but keep the element
     const logoImg = document.querySelector('.logo-bg img');
     if (logoImg) logoImg.style.animation = 'none';
   }
 
-  // Always remove the veil on load, whatever happened before
   if (veil) veil.classList.remove('covering');
 });
 
@@ -155,7 +143,6 @@ function navigate(pageId) {
     } catch (err) {
       console.warn('[Aurora] navigate error:', err);
     } finally {
-      // Veil and transition are ALWAYS released
       if (veil) veil.classList.remove('covering');
       setTimeout(() => { state.transitioning = false; }, 280);
     }
@@ -163,7 +150,7 @@ function navigate(pageId) {
 }
 window.navigate = navigate;
 
-/* ── DOCK HOVER (magnetic) — desktop only ── */
+/* ── DOCK HOVER ── */
 function initDockHover() {
   if (!dock) return;
   if (BROWSER.isInApp) return;
@@ -208,10 +195,10 @@ function initDockHover() {
   });
 }
 
-/* ── DOCK SCROLL HIDE — desktop only; disabled in-app to avoid stuck pointer-events ── */
+/* ── DOCK SCROLL HIDE ── */
 function initScrollHide() {
   if (!dock) return;
-  if (BROWSER.isInApp) return;                       // never hide inside WebViews
+  if (BROWSER.isInApp) return;
   if (window.matchMedia('(pointer:coarse)').matches) return;
 
   dock.style.transition = 'transform 0.45s cubic-bezier(0.34,1.4,0.64,1), opacity 0.3s ease';
@@ -358,7 +345,7 @@ function submitForm(btn) {
   inputs.forEach(inp => { inp.style.opacity = '0.45'; inp.disabled = true; });
 }
 
-/* ── CURSOR TRAIL — skipped in-app (see DOMContentLoaded) ── */
+/* ── CURSOR TRAIL ── */
 function initCursorTrail() {
   if (window.matchMedia('(pointer:coarse)').matches) return;
   const canvas = document.createElement('canvas');
@@ -415,7 +402,7 @@ function initCursorTrail() {
   loop();
 }
 
-/* ── HERO PARTICLES — skipped in-app (see DOMContentLoaded) ── */
+/* ── HERO PARTICLES ── */
 function initHeroParticles() {
   const hero = document.querySelector('.hero');
   if (!hero) return;
@@ -477,7 +464,7 @@ function initHeroParticles() {
   window.addEventListener('resize', resize);
 }
 
-/* ── TILT CARDS — desktop hover only ── */
+/* ── TILT CARDS ── */
 function initTiltCards() {
   if (window.matchMedia('(pointer:coarse)').matches) return;
   if (BROWSER.isInApp) return;
@@ -529,7 +516,7 @@ function initCounters() {
 function initTypewriter() {
   const el = document.querySelector('.hero-dek');
   if (!el) return;
-  if (BROWSER.isInApp) return; // avoid layout thrash in WebViews
+  if (BROWSER.isInApp) return;
   const phrases = [
     'A generation prepares to make itself heard on the world stage',
     'Leadership forged through debate and dialogue',
@@ -613,7 +600,6 @@ function initInstagramDetection() {
   if (BROWSER.isInApp) {
     const banner = document.getElementById('ig-banner');
     if (banner) banner.style.display = 'block';
-    console.warn('[Aurora] In-app browser detected. Some visual effects reduced for compatibility.');
   }
 }
 function dismissIgBanner() {
@@ -623,10 +609,9 @@ function dismissIgBanner() {
 window.dismissIgBanner = dismissIgBanner;
 
 /* ════════════════════════════════════════════════════════════════
-   TAFMUN — LANDING, STANDARD, SPECIAL
+   TAFMUN
    ════════════════════════════════════════════════════════════════ */
 
-/* ── Bank details shared init ─────────────────────────────── */
 function initTAFMUNBankDetails() {
   ['taf', 'tsf'].forEach(p => {
     const t = document.getElementById(`${p}-bank-title`);
@@ -638,7 +623,6 @@ function initTAFMUNBankDetails() {
   });
 }
 
-/* ── View switcher ─────────────────────────────────────────── */
 function openTafView(view) {
   const landing  = document.getElementById('taf-landing');
   const standard = document.getElementById('taf-view-standard');
@@ -677,7 +661,6 @@ function resetTAFMUNLanding() {
 window.openTafView   = openTafView;
 window.backToLanding = backToLanding;
 
-/* ── Standard registration init ────────────────────────────── */
 function initTAFMUNStandard() {
   [1, 2, 3].forEach(n => {
     const sel = document.getElementById(`taf-committee-${n}`);
@@ -759,7 +742,7 @@ function validatePriorities(prefix) {
   return true;
 }
 
-/* ── Submit standard ───────────────────────────────────────── */
+/* ── Submit standard ── */
 async function submitTAFMUN() {
   const btn = document.getElementById('taf-submit-btn');
   if (!btn || btn.disabled) return;
@@ -768,6 +751,7 @@ async function submitTAFMUN() {
 
   const fullName = document.getElementById('taf-name').value.trim();
   const phone    = document.getElementById('taf-phone').value.trim();
+  const email    = document.getElementById('taf-email').value.trim();
   const grade    = document.getElementById('taf-grade').value;
   const school   = document.getElementById('taf-school').value.trim();
   const fileInput = document.getElementById('taf-payment-proof');
@@ -780,6 +764,9 @@ async function submitTAFMUN() {
     showErr('taf-phone-error', 'Phone number is required.'); valid = false;
   } else if (!/^[0-9+\-\s()]{7,20}$/.test(phone)) {
     showErr('taf-phone-error', 'Please enter a valid phone number.'); valid = false;
+  }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showErr('taf-email-error'); valid = false;
   }
   if (!grade)  { showErr('taf-grade-error');  valid = false; }
   if (!school) { showErr('taf-school-error'); valid = false; }
@@ -816,7 +803,7 @@ async function submitTAFMUN() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           registrationType: 'standard',
-          fullName, phoneNumber: phone, grade, school,
+          fullName, email, phoneNumber: phone, grade, school,
           firstPriority:  document.getElementById('taf-committee-1').value,
           secondPriority: document.getElementById('taf-committee-2').value,
           thirdPriority:  document.getElementById('taf-committee-3').value,
@@ -854,7 +841,7 @@ async function submitTAFMUN() {
 }
 window.submitTAFMUN = submitTAFMUN;
 
-/* ── Special registration init ─────────────────────────────── */
+/* ── Special init ── */
 function initTAFMUNSpecial() {
   [1, 2, 3].forEach(n => {
     const sel = document.getElementById(`tsf-committee-${n}`);
@@ -900,7 +887,7 @@ function initTAFMUNSpecial() {
   });
 }
 
-/* ── Submit special ────────────────────────────────────────── */
+/* ── Submit special ── */
 async function submitSpecialTAFMUN() {
   const btn = document.getElementById('taf-special-submit-btn');
   if (!btn || btn.disabled) return;
@@ -1014,7 +1001,7 @@ async function submitSpecialTAFMUN() {
 }
 window.submitSpecialTAFMUN = submitSpecialTAFMUN;
 
-/* ── Helpers ───────────────────────────────────────────────── */
+/* ── Helpers ── */
 function showErr(id, msg) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -1022,7 +1009,6 @@ function showErr(id, msg) {
   el.style.display = 'block';
 }
 
-/* ── Copy button with WebView-safe fallback ────────────────── */
 function initCopyButton(btnId) {
   const btn = document.getElementById(btnId);
   if (!btn) return;
@@ -1034,7 +1020,6 @@ function initCopyButton(btnId) {
 
     const text = TAFMUN_CONFIG.bankAccount.accountNumber;
 
-    // Modern Clipboard API — only if actually available
     if (navigator.clipboard && window.isSecureContext && typeof navigator.clipboard.writeText === 'function') {
       navigator.clipboard.writeText(text).then(() => {
         showCopySuccess(btn);

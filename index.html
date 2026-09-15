@@ -7,14 +7,6 @@
   <meta name="theme-color" content="#0a0a0a">
   <title>The Aurora Forum</title>
 
-  <!-- ═══════════════════════════════════════════════════════════════
-       EARLY BROWSER DETECTION — runs before CSS so classes apply
-       before the first paint. Priority order:
-         1. Named in-app browsers (Instagram, Facebook, TikTok, etc.)
-         2. Generic Android WebView ("; wv)")
-         3. iOS non-Safari WebKit (WKWebView)
-         4. Normal browsers
-       ═══════════════════════════════════════════════════════════════ -->
   <script>
   (function () {
     try {
@@ -91,11 +83,7 @@
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     IN-APP BROWSER BANNER — fully inline-styled so it does NOT depend
-     on style.css being loaded/cached correctly. Works even if the
-     external CSS is stale or blocked by the WebView.
-     ═══════════════════════════════════════════════════════════════ -->
+<!-- IN-APP BROWSER BANNER (fully inline-styled) -->
 <div id="ig-banner" role="status" aria-live="polite" style="display:none;position:fixed;left:16px;right:16px;bottom:96px;z-index:10001;background:#141414;border:1px solid rgba(120,60,200,0.45);border-radius:8px;padding:16px 18px;box-shadow:0 10px 30px rgba(0,0,0,0.6),0 0 24px rgba(120,60,200,0.18);font-family:'Libre Baskerville',Georgia,serif;color:#e8e0f0;box-sizing:border-box;-webkit-font-smoothing:antialiased;">
   <div style="display:flex;align-items:flex-start;gap:14px;">
     <div aria-hidden="true" style="flex-shrink:0;color:#7b3fc4;font-size:1.15rem;line-height:1;">✦</div>
@@ -161,7 +149,7 @@ window.dismissIgBanner = dismissIgBanner;
   </div>
 </header>
 
-<!-- iOS 26 SAFARI DOCK -->
+<!-- DOCK -->
 <nav class="dock" id="dock" aria-label="Page navigation">
   <div class="dock-shell">
     <button type="button" class="dock-btn active" data-page="front" onclick="navigate('front',this)" aria-label="Front Page">
@@ -375,7 +363,7 @@ window.dismissIgBanner = dismissIgBanner;
   <section class="page" id="page-tafmun" aria-label="TAFMUN Registration">
     <div class="taf-form-wrap">
 
-      <!-- ── LANDING / TYPE SELECTION ── -->
+      <!-- LANDING -->
       <div class="taf-landing" id="taf-landing">
         <div class="pg-head">
           <div class="pg-label">Registration</div>
@@ -413,7 +401,7 @@ window.dismissIgBanner = dismissIgBanner;
         </div>
       </div>
 
-      <!-- ── STANDARD FORM ── -->
+      <!-- STANDARD FORM -->
       <div class="taf-view" id="taf-view-standard" style="display:none;">
         <div class="taf-view-bar">
           <button type="button" class="taf-back-btn" onclick="backToLanding()">← Back</button>
@@ -444,6 +432,13 @@ window.dismissIgBanner = dismissIgBanner;
                 </div>
 
                 <div class="cf-field">
+                  <label for="taf-email">Email Address</label>
+                  <input id="taf-email" type="email" placeholder="you@example.com" autocomplete="email">
+                  <div class="cf-field-bar"></div>
+                  <div class="taf-error-msg" id="taf-email-error">Please enter a valid email address.</div>
+                </div>
+
+                <div class="cf-field">
                   <label for="taf-grade">Grade</label>
                   <select id="taf-grade">
                     <option value="">Select your grade</option>
@@ -465,7 +460,6 @@ window.dismissIgBanner = dismissIgBanner;
                   <div class="taf-error-msg" id="taf-school-error">Please enter your school or college name.</div>
                 </div>
 
-                <!-- Committee Priorities -->
                 <div class="taf-priority-block">
                   <div class="taf-priority-hd">
                     <div class="eyebrow">Committee Preferences</div>
@@ -552,7 +546,7 @@ window.dismissIgBanner = dismissIgBanner;
         </div>
       </div>
 
-      <!-- ── SPECIAL FORM ── -->
+      <!-- SPECIAL FORM -->
       <div class="taf-view" id="taf-view-special" style="display:none;">
         <div class="taf-view-bar">
           <button type="button" class="taf-back-btn" onclick="backToLanding()">← Back</button>
@@ -574,7 +568,7 @@ window.dismissIgBanner = dismissIgBanner;
           <div class="taf-form-side">
             <div class="taf-form-card">
 
-              <!-- SECTION 01 — PARTICIPANT DETAILS -->
+              <!-- SECTION 01 -->
               <div class="taf-section">
                 <div class="taf-section-hd">
                   <div class="eyebrow">Section 01</div>
@@ -589,17 +583,17 @@ window.dismissIgBanner = dismissIgBanner;
                   </div>
 
                   <div class="cf-field">
-                    <label for="tsf-email">Email Address <span class="req">*</span></label>
-                    <input id="tsf-email" type="email" placeholder="you@example.com" autocomplete="email">
-                    <div class="cf-field-bar"></div>
-                    <div class="taf-error-msg" id="tsf-email-error">Please enter a valid email address.</div>
-                  </div>
-
-                  <div class="cf-field">
                     <label for="tsf-phone">Phone Number <span class="req">*</span></label>
                     <input id="tsf-phone" type="tel" placeholder="+92 3XX XXXXXXX" autocomplete="tel">
                     <div class="cf-field-bar"></div>
                     <div class="taf-error-msg" id="tsf-phone-error">Please enter a valid phone number.</div>
+                  </div>
+
+                  <div class="cf-field">
+                    <label for="tsf-email">Email Address <span class="req">*</span></label>
+                    <input id="tsf-email" type="email" placeholder="you@example.com" autocomplete="email">
+                    <div class="cf-field-bar"></div>
+                    <div class="taf-error-msg" id="tsf-email-error">Please enter a valid email address.</div>
                   </div>
 
                   <div class="cf-field">
@@ -626,7 +620,7 @@ window.dismissIgBanner = dismissIgBanner;
                 </div>
               </div>
 
-              <!-- SECTION 02 — COMMITTEE PREFERENCES -->
+              <!-- SECTION 02 -->
               <div class="taf-section">
                 <div class="taf-section-hd">
                   <div class="eyebrow">Section 02</div>
@@ -668,7 +662,7 @@ window.dismissIgBanner = dismissIgBanner;
                 </div>
               </div>
 
-              <!-- SECTION 03 — GOT FAMILIARITY -->
+              <!-- SECTION 03 -->
               <div class="taf-section">
                 <div class="taf-section-hd">
                   <div class="eyebrow">Section 03</div>
@@ -730,7 +724,7 @@ window.dismissIgBanner = dismissIgBanner;
                 </div>
               </div>
 
-              <!-- SECTION 04 — PAYMENT -->
+              <!-- SECTION 04 -->
               <div class="taf-section">
                 <div class="taf-section-hd">
                   <div class="eyebrow">Section 04</div>

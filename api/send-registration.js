@@ -7,26 +7,21 @@ import { Resend } from 'resend';
  *   - "standard" : Conventional committee registration (PKR 2,200)
  *   - "special"  : The War of the Five Kings — Fictional Crisis Committee (PKR 2,400)
  *
- * Common fields: fullName, phoneNumber, grade, school,
+ * Common fields: fullName, email, phoneNumber, grade, school,
  *                paymentProofBase64, paymentProofMime
  * Standard-only: firstPriority, secondPriority, thirdPriority
- * Special-only:  email, firstPriority, secondPriority, thirdPriority,
- *                watchedGoT, westerosFamiliarity, crisisBefore,
+ * Special-only:  watchedGoT, westerosFamiliarity, crisisBefore,
  *                crisisExperience, munExperience
  */
 export default async function handler(req, res) {
-  // ── CORS: allow requests from any origin (needed for WebView hosts
-  //    like Instagram/Facebook that sometimes strip the Origin header).
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Access-Control-Max-Age', '86400');
 
-  // Preflight
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
   }
-
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -35,12 +30,15 @@ export default async function handler(req, res) {
   const registrationType = body.registrationType === 'special' ? 'special' : 'standard';
 
   const {
-    fullName, phoneNumber, grade, school,
+    fullName, email, phoneNumber, grade, school,
     paymentProofBase64, paymentProofMime
   } = body;
 
-  if (!fullName || !phoneNumber || !grade || !school) {
+  if (!fullName || !email || !phoneNumber || !grade || !school) {
     return res.status(400).json({ error: 'Missing required fields' });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: 'Invalid email address' });
   }
   if (!paymentProofBase64 || !paymentProofMime) {
     return res.status(400).json({ error: 'Payment screenshot is required' });
@@ -63,17 +61,17 @@ export default async function handler(req, res) {
     }
     subject = `TAFMUN Registration – ${fullName}`;
     html = renderStandardEmail({
-      fullName, phoneNumber, grade, school,
+      fullName, email, phoneNumber, grade, school,
       firstPriority, secondPriority, thirdPriority
     });
   } else {
     const {
-      email, firstPriority, secondPriority, thirdPriority,
+      firstPriority, secondPriority, thirdPriority,
       watchedGoT, westerosFamiliarity, crisisBefore,
       crisisExperience, munExperience
     } = body;
 
-    if (!email || !watchedGoT || !westerosFamiliarity || !crisisBefore || !munExperience) {
+    if (!watchedGoT || !westerosFamiliarity || !crisisBefore || !munExperience) {
       return res.status(400).json({ error: 'Missing required special registration fields.' });
     }
     if (crisisBefore === 'Yes' && !crisisExperience) {
@@ -111,6 +109,7 @@ export default async function handler(req, res) {
     const { data, error } = await resend.emails.send({
       from: fromEmail,
       to: [recipient],
+      replyTo: email,
       subject,
       html,
       attachments: [{
@@ -158,19 +157,6 @@ function table(rows) {
   return `<table style="width:100%; border-collapse:collapse; font-family:Arial,sans-serif; font-size:13px;">${rows}</table>`;
 }
 
-const BANK = {
-  fee: 'PKR 2,200',
-  title: 'Rizwan Haider',
-  bank: 'Soneri Bank',
-  account: '20004814507'
-};
-const SPECIAL_BANK = {
-  fee: 'PKR 2,400',
-  title: 'Rizwan Haider',
-  bank: 'Soneri Bank',
-  account: '20004814507'
-};
-
 function renderStandardEmail(d) {
   return `
     <div style="font-family:Arial, sans-serif; max-width:640px; margin:0 auto; color:#111;">
@@ -179,6 +165,7 @@ function renderStandardEmail(d) {
       ${sectionTitle('Registration Information')}
       ${table(
         row('Full Name', d.fullName) +
+        row('Email', d.email) +
         row('Phone', d.phoneNumber) +
         row('Grade', d.grade) +
         row('School / College', d.school)
@@ -188,13 +175,6 @@ function renderStandardEmail(d) {
         row('1st Committee Priority', d.firstPriority) +
         row('2nd Committee Priority', d.secondPriority) +
         row('3rd Committee Priority', d.thirdPriority)
-      )}
-      ${sectionTitle('Payment Details')}
-      ${table(
-        row('Registration Fee', BANK.fee) +
-        row('Account Title', BANK.title) +
-        row('Bank', BANK.bank) +
-        row('Account Number', BANK.account)
       )}
       <p style="margin-top:20px; font-size:12px; color:#888;">Generated from the TAFMUN registration page on the Aurora Forum website.</p>
     </div>
@@ -222,8 +202,7 @@ function renderSpecialEmail(d) {
       ${sectionTitle('Special Committee')}
       ${table(
         row('Committee', 'THE WAR OF THE FIVE KINGS') +
-        row('Committee Type', 'Fictional Crisis Committee') +
-        row('Fee', 'PKR 2,400')
+        row('Committee Type', 'Fictional Crisis Committee')
       )}
 
       ${sectionTitle('Committee Preferences')}
@@ -240,14 +219,6 @@ function renderSpecialEmail(d) {
         row('Participated in a Crisis Committee before?', d.crisisBefore) +
         (d.crisisBefore === 'Yes' ? row('Crisis Committee experience', d.crisisExperience || '—') : '') +
         row('MUN experience', d.munExperience)
-      )}
-
-      ${sectionTitle('Payment Details')}
-      ${table(
-        row('Registration Fee', SPECIAL_BANK.fee) +
-        row('Account Title', SPECIAL_BANK.title) +
-        row('Bank', SPECIAL_BANK.bank) +
-        row('Account Number', SPECIAL_BANK.account)
       )}
 
       <p style="margin-top:20px; font-size:12px; color:#888;">Generated from the TAFMUN Special Registration form on the Aurora Forum website.</p>
