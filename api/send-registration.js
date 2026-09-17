@@ -4,8 +4,8 @@ import { Resend } from 'resend';
  * TAFMUN Registration handler.
  *
  * Body must include `registrationType`:
- *   - "standard" : Conventional committee registration (PKR 2,200)
- *   - "special"  : The War of the Five Kings — Fictional Crisis Committee (PKR 2,400)
+ *   - "standard" : Conventional committee registration (PKR 2,500)
+ *   - "special"  : The War of the Five Kings — Fictional Crisis Committee (PKR 2,700)
  *
  * Common fields: fullName, email, phoneNumber, grade, school,
  *                paymentProofBase64, paymentProofMime

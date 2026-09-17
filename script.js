@@ -27,8 +27,8 @@ const state = { currentPage: 'front', transitioning: false };
 const pages = ['front', 'about', 'tafmun', 'events', 'contact'];
 
 const TAFMUN_CONFIG = {
-  fee: 2200,
-  specialFee: 2400,
+  fee: 2500,
+  specialFee: 2700,
   bankAccount: {
     accountTitle: "Rizwan Haider",
     bank: "Soneri Bank",
